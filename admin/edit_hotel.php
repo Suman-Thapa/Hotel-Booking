@@ -1,8 +1,8 @@
 <?php
 session_start();
-include 'connection.php';
-include 'functions.php';
-include 'navbar.php';
+include '../includes/connection.php';
+include '../includes/functions.php';
+include '../includes/navbar.php';
 
 if ($_SESSION['level'] != 1) {
     header("Location: login.php");
@@ -103,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Edit Hotel</h2>
     <form method="POST" enctype="multipart/form-data">
         <?php
-        $imagePath = "uploads/hotels/" . $hotel['hotel_image'];
+        $imagePath = "../uploads/hotels/" . $hotel['hotel_image'];
         $imageExists = (!empty($hotel['hotel_image']) && file_exists($imagePath));
 
         if ($imageExists) {

@@ -1,11 +1,11 @@
 <?php
 session_start();
-include 'navbar.php';
-include 'connection.php';
-include 'functions.php';
+include '../includes/navbar.php';
+include '../includes/connection.php';
+include '../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
-    die("You must <a href='login.php'>login</a> to book.");
+    die("You must <a href='../login/login.php'>login</a> to book.");
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'connection.php';
-include 'navbar.php';
+include '../includes/connection.php';
+include '../includes/navbar.php';
 
 // Only admin can access
 if (!isset($_SESSION['user_id']) || $_SESSION['level'] != 1) {

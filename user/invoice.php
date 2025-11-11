@@ -1,10 +1,13 @@
 <?php
 session_start();
-include 'connection.php';
-include 'navbar.php';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+include '../includes/connection.php';
+include '../includes/navbar.php';
 
 if (!isset($_SESSION['user_id'])) {
-    die("You must <a href='login.php'>login</a> to view the invoice.");
+    die("You must <a href='../login/login.php'>login</a> to view the invoice.");
 }
 
 if (!isset($_GET['booking_id'])) {
@@ -23,6 +26,10 @@ $query = "SELECT b.*, u.name, u.email, h.hotel_name, h.location, h.price_per_roo
           WHERE b.booking_id = ? AND b.user_id = ?";
 
 $stmt = $con->prepare($query);
+if (!$stmt) {
+    die("Prepare failed: " . $con->error);
+}
+
 $stmt->bind_param("ii", $booking_id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -34,7 +41,7 @@ if ($row = $result->fetch_assoc()) {
     $nights = $check_in->diff($check_out)->days;
     $total_price = $row['rooms_booked'] * $row['price_per_room'] * $nights;
 
-    $imagePath = "uploads/hotels/" . $row['hotel_image'];
+    $imagePath = "../uploads/hotels/" . $row['hotel_image'];
     if (empty($row['hotel_image']) || !file_exists($imagePath)) {
         $imagePath = "https://via.placeholder.com/400x300?text=No+Image";
     }
@@ -78,7 +85,7 @@ if ($row = $result->fetch_assoc()) {
 
         <div style="flex:1; text-align:center; margin-top:50px; margin-right:50px;">
             <img src="<?= $imagePath; ?>" alt="Hotel Image"
-                 style="width:100%; max-height:300px; object-fit:cover; border:1px solid #ccc;">
+            style="width:100%; max-height:300px; object-fit:cover; border:1px solid #ccc;">
         </div>
     </div>
 
@@ -94,18 +101,14 @@ if ($row = $result->fetch_assoc()) {
 }
 ?>
 
-<!-- ✅ Correct Khalti widget (do not embed khalti.com directly) -->
 <script src="https://khalti.com/static/khalti-checkout.js"></script>
 <script>
 <?php if ($row && $row['payment_status'] != 'paid') : ?>
 const config = {
-    // ✅ Your valid test public key
     publicKey: "test_public_key_dc74a8c3cf944c10b2b7c9cbd95f41be",
-
     productIdentity: "<?= $row['booking_id']; ?>",
     productName: "<?= addslashes($row['hotel_name']); ?>",
-    productUrl: "http://localhost/Hotel%20Booking/invoice.php?booking_id=<?= $row['booking_id']; ?>",
-
+    productUrl: "http://localhost/Hotel%20Booking/user/invoice.php?booking_id=<?= $row['booking_id']; ?>",
     eventHandler: {
         onSuccess(payload) {
             console.log("✅ Payment Success:", payload);
@@ -141,7 +144,7 @@ const config = {
 
 const checkout = new KhaltiCheckout(config);
 document.getElementById("pay-with-khalti").addEventListener("click", function() {
-    checkout.show({ amount: <?= (int)$total_price * 100; ?> }); // Convert to paisa
+    checkout.show({ amount: <?= (int)$total_price * 100; ?> });
 });
 <?php endif; ?>
 </script>

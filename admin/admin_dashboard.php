@@ -1,8 +1,8 @@
 <?php
 session_start();
-include 'navbar.php';
-include 'connection.php';
-include 'functions.php';
+include '../includes/navbar.php';
+include '../includes/connection.php';
+include '../includes/functions.php';
 
 // Only admin can access
 if (!isset($_SESSION['user_id']) || $_SESSION['level'] != 1) {
@@ -138,8 +138,8 @@ img {
                     <td>₹<?php echo $row['price_per_room']; ?></td>
                     <td>
                     <?php
-                    if (!empty($row['hotel_image']) && file_exists("uploads/hotels/" . $row['hotel_image'])) {
-                        echo "<img src='uploads/hotels/" . $row['hotel_image'] . "' style='width:80px;height:60px;object-fit:cover;border-radius:4px;'>";
+                    if (!empty($row['hotel_image']) && file_exists("../uploads/hotels/" . $row['hotel_image'])) {
+                        echo "<img src='../uploads/hotels/" . $row['hotel_image'] . "' style='width:80px;height:60px;object-fit:cover;border-radius:4px;'>";
                     } else {
                         echo "<img src='https://via.placeholder.com/80x60?text=No+Image'>";
                     }

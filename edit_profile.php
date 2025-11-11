@@ -1,8 +1,8 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
-include 'connection.php';
-include 'functions.php';
-include 'navbar.php';
+include 'includes/connection.php';
+include 'includes/functions.php';
+include 'includes/navbar.php';
 
 if (!isset($_SESSION['user_id'])) {
     die("You must <a href='login.php'>login</a> to view profile.");

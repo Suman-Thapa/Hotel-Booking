@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) 
 session_start();
 include 'connection.php';
-
+$base_url = "/Hotel Booking/";
 // Default values
 $level = null;
 $user_id = $_SESSION['user_id'] ?? null;
@@ -18,47 +18,50 @@ if ($user_id) {
         <!-- Home button works even if not logged in -->
         <a href="<?php 
             if ($level === 1) {
-                echo 'admin_dashboard.php';
-            } else {
-                echo 'index.php';
+                echo $base_url . 'admin/admin_dashboard.php';
+            } 
+            else {
+                echo $base_url . 'index.php';
             }
-        ?>">Home</a>
+        ?>">
+        Home</a>
+
         
         <?php if ($user_id && $level==0): ?>
-            <a href="my_bookings.php">View Bookings</a>
+            <a href="<?php echo $base_url; ?>user/my_bookings.php">View Bookings</a>
         <?php endif; ?>
 
         <?php if ($user_id && $level==1): ?>
-            <a href="admin_invoices.php">Invoices</a>
-            <a href="admin_pending_cancellations.php">Pending Cancellations</a>
+            <a href="<?php echo $base_url; ?>admin/admin_invoices.php">Invoices</a>
+            <a href="<?php echo $base_url; ?>admin/admin_pending_cancellations.php">Pending Cancellations</a>
         <?php endif; ?>
     </div>
 
     <div>
         <?php if ($user_id): ?>
-            <a href="view_profile.php">View Profile</a>
+            <a href="<?php echo $base_url; ?>view_profile.php">View Profile</a>
             
-            <a href="logout.php">Logout</a>
+            <a href="<?php echo $base_url; ?>login/logout.php">Logout</a>
         <?php else: ?>
-            <a href="login.php">Login</a>
-            <a href="register.php">Register</a>
+            <a href="<?php echo $base_url; ?>login/login.php">Login</a>
+            <a href="<?php echo $base_url; ?>login/register.php">Register</a>
         <?php endif; ?>
     </div>
 </nav>
 <style>
-body {
-    margin: 0;
-    padding: 0;
+/* Navbar styling */
+nav {
+  background-color: #4CAF50;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-nav {
-    background: #2E7D32;
-    padding: 16px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    font-size: 17px;
+body {
+  margin: 0;
+  padding: 0;
+  font-size:25px;
 }
 
 nav a {
@@ -68,6 +71,7 @@ nav a {
     padding: 8px 14px;
     border-radius: 6px;
     transition: background 0.3s, color 0.3s, border-bottom 0.3s;
+    
 }
 
 nav a:hover {

@@ -1,8 +1,8 @@
 <?php
 session_start();
-include 'connection.php';
-include 'functions.php';
-include 'navbar.php';
+include '../includes/connection.php';
+include '../includes/functions.php';
+include '../includes/navbar.php';
 
 if ($_SESSION['level'] != 1) {
     header("Location: login.php");

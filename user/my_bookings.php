@@ -1,10 +1,10 @@
 <?php
 session_start();
-include 'navbar.php';
-include 'connection.php';
+include '../includes/navbar.php';
+include '../includes/connection.php';
 
 if (!isset($_SESSION['user_id'])) {
-    die("You must <a href='login.php'>login</a> to view bookings.");
+    die("You must <a href='..login/login.php'>login</a> to view bookings.");
 }
 
 $user_id = $_SESSION['user_id'];

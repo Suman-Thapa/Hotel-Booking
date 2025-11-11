@@ -2,9 +2,9 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-include 'navbar.php';
-include 'connection.php';
-include 'functions.php';
+include 'includes/navbar.php';
+include 'includes/connection.php';
+include 'includes/functions.php';
 
 $search = '';
 if (isset($_GET['search'])) {
@@ -14,11 +14,15 @@ if (isset($_GET['search'])) {
 
 
 <!-- Search form -->
-<form method="GET" action="">
-    <input type="text" name="search" placeholder="Search by hotel name or location" 
-    value="<?php echo htmlspecialchars($search); ?>">
-    <button type="submit">Search</button>
-</form>
+ <div class="search_area">
+     
+     <form method="GET" action="">
+         <input type="text" name="search" placeholder="Search by hotel name or location" 
+         value="<?php echo htmlspecialchars($search); ?>">
+         <button type="submit">Search</button>
+     </form>
+
+ </div>
 
 <hr>
 
@@ -64,7 +68,7 @@ if (mysqli_num_rows($result) > 0) {
         // Booking form only if rooms available
         if ($row['available_rooms'] > 0) {
             $maxRooms = $row['available_rooms'] < 5 ? $row['available_rooms'] : 5;
-            echo "<form class='bookingForm' method='POST' action='book_process.php'>
+            echo "<form class='bookingForm' method='POST' action='user/book_process.php'>
                     <input type='hidden' name='hotel_id' value='" . $row['hotel_id'] . "'>
                     Rooms to book: <input type='number' name='rooms' min='1' max='$maxRooms' required><br>
                     Check-in: <input type='date' name='check_in' required><br>
@@ -85,6 +89,16 @@ if (mysqli_num_rows($result) > 0) {
 
 <style>
 /* Hotel card styles */
+.search_area {
+    background-image: url('uploads/hotels/Room1.jpg');
+    background-size: cover; 
+    background-position: center;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .hotel-card {
     border: 1px solid #c8e6c9;
     background-color: #f0fdf4;
@@ -142,7 +156,7 @@ if (mysqli_num_rows($result) > 0) {
 }
 /* Search form styling */
 form[method="GET"] {
-    width: 350px;
+    width: 500px;
     /* top | right | bottom | left */
     padding: 20px 10px 8px 10px;
     display: flex;
@@ -152,12 +166,14 @@ form[method="GET"] {
 
 form[method="GET"] input[type="text"] {
     flex: 1;
-    padding: 8px 10px;
+    width: 100%;
+    padding: 10px 30px 10px 10px; 
     border: 1px solid #a5d6a7;
     border-radius: 6px;
     font-size: 14px;
     outline: none;
     transition: 0.3s;
+    font-size:18px;
 }
 
 form[method="GET"] input[type="text"]:focus {
@@ -166,7 +182,7 @@ form[method="GET"] input[type="text"]:focus {
 }
 
 form[method="GET"] button {
-    padding: 8px 15px;
+    padding: 14px 25px;
     background-color: #2e7d32;
     color: white;
     border: none;

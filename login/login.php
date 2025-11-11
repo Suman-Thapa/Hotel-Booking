@@ -1,8 +1,8 @@
 <?php
 session_start();
-include 'navbar.php';
-include 'functions.php';
-include 'connection.php';
+include '../includes/navbar.php';
+include '../includes/functions.php';
+include '../includes/connection.php';
 
 $msg = "";
 $email_value = ""; // To preserve email input on error
@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['level']   = $row['level'];
 
             if ($row['level'] == 1) {
-                header("Location: admin_dashboard.php");
+                header("Location: ../admin/admin_dashboard.php");
             } else {
-                header("Location: index.php");
+                header("Location: ../index.php");
             }
             exit();
         } else {

@@ -1,6 +1,6 @@
 <?php
-include 'navbar.php';
-include 'connection.php';
+include '../includes/navbar.php';
+include '../includes/connection.php';
 
 // Fetch all bookings with payment status
 $sql = "SELECT 
@@ -52,7 +52,7 @@ $result = mysqli_query($con, $sql);
 
         <?php while ($row = mysqli_fetch_assoc($result)) { 
             // ✅ Correct image path
-            $imagePath = "uploads/hotels/" . $row['hotel_image'];
+            $imagePath = "../uploads/hotels/" . $row['hotel_image'];
             $imageExists = (!empty($row['hotel_image']) && file_exists($imagePath));
 
             // ✅ Fallback image if missing
