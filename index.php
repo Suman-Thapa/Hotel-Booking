@@ -73,7 +73,7 @@ if (mysqli_num_rows($result) > 0) {
                     Rooms to book: <input type='number' name='rooms' min='1' max='$maxRooms' required><br>
                     Check-in: <input type='date' name='check_in' required><br>
                     Check-out: <input type='date' name='check_out' required><br>
-                    <button type='submit'>Book Now</button>
+                    <button type='submit' id='book-btn'>Book Now</button>
                   </form>";
         } else {
             echo "<b class='full'>Rooms Full</b>";
@@ -90,7 +90,7 @@ if (mysqli_num_rows($result) > 0) {
 <style>
 /* Hotel card styles */
 .search_area {
-    background-image: url('uploads/hotels/Room1.jpg');
+    background-image: url('uploads/hotels/Room5.jpg');
     background-size: cover; 
     background-position: center;
     height: 500px;
@@ -199,48 +199,66 @@ form[method="GET"] button:hover {
 </style>
 
 <script>
-const today = new Date().toISOString().split('T')[0];
-const forms = document.querySelectorAll('.bookingForm');
+    document.getElementById("book-btn").addEventListener("click", function(event) {
+        const form = this.closest("form");
+        const rooms = form.querySelector("input[name='rooms']").value.trim();
+        const checkIn = form.querySelector("input[name='check_in']").value.trim();
+        const checkOut = form.querySelector("input[name='check_out']").value.trim();
 
-forms.forEach(form => {
-    const checkIn = form.querySelector('input[name="check_in"]');
-    const checkOut = form.querySelector('input[name="check_out"]');
-    const roomsInput = form.querySelector('input[name="rooms"]');
-
-    // Set minimum dates
-    checkIn.setAttribute('min', today);
-    checkOut.setAttribute('min', today);
-
-    // Update check-out min dynamically
-    checkIn.addEventListener('change', function() {
-        checkOut.setAttribute('min', this.value);
-    });
-
-    // Form submission validation
-    form.addEventListener('submit', function(e) {
-        const rooms = parseInt(roomsInput.value);
-        const maxRooms = parseInt(roomsInput.getAttribute('max'));
-
-        if (rooms < 1 || rooms > maxRooms) {
-            e.preventDefault();
-            alert("You can book between 1 and " + maxRooms + " rooms per booking.");
+        // Check if any required field is empty
+        if (!rooms || !checkIn || !checkOut) {
+            alert("Please fill all booking details before confirming!");
+            event.preventDefault(); // stop form submission
             return;
         }
 
-        const checkInDate = new Date(checkIn.value);
-        const checkOutDate = new Date(checkOut.value);
-
-        if (checkInDate < new Date(today)) {
-            e.preventDefault();
-            alert("Check-in date cannot be in the past.");
-            return;
-        }
-
-        if (checkOutDate <= checkInDate) {
-            e.preventDefault();
-            alert("Check-out date must be after check-in date.");
-            return;
+        // Show confirmation only if fields are filled
+        if (!confirm("Are you sure you want to confirm this booking?")) {
+            event.preventDefault();
         }
     });
-});
-</script>
+    const today = new Date().toISOString().split('T')[0];
+    const forms = document.querySelectorAll('.bookingForm');
+
+    forms.forEach(form => {
+        const checkIn = form.querySelector('input[name="check_in"]');
+        const checkOut = form.querySelector('input[name="check_out"]');
+        const roomsInput = form.querySelector('input[name="rooms"]');
+
+        // Set minimum dates
+        checkIn.setAttribute('min', today);
+        checkOut.setAttribute('min', today);
+
+        // Update check-out min dynamically
+        checkIn.addEventListener('change', function() {
+            checkOut.setAttribute('min', this.value);
+        });
+
+        // Form submission validation
+        form.addEventListener('submit', function(e) {
+            const rooms = parseInt(roomsInput.value);
+            const maxRooms = parseInt(roomsInput.getAttribute('max'));
+
+            if (rooms < 1 || rooms > maxRooms) {
+                e.preventDefault();
+                alert("You can book between 1 and " + maxRooms + " rooms per booking.");
+                return;
+            }
+
+            const checkInDate = new Date(checkIn.value);
+            const checkOutDate = new Date(checkOut.value);
+
+            if (checkInDate < new Date(today)) {
+                e.preventDefault();
+                alert("Check-in date cannot be in the past.");
+                return;
+            }
+
+            if (checkOutDate <= checkInDate) {
+                e.preventDefault();
+                alert("Check-out date must be after check-in date.");
+                return;
+            }
+        });
+    });
+    </script>
