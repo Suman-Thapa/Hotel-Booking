@@ -1,7 +1,7 @@
 <?php
-include 'functions.php';
-include 'connection.php';
-include 'navbar.php';
+include '../includes/functions.php';
+include '../includes/connection.php';
+include '../includes/navbar.php';
 
 $successMsg = '';
 $errorMsg = '';

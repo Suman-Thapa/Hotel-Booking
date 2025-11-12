@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) 
 session_start();
 include 'connection.php';
-$base_url = "/Hotel Booking/";
+$base_url = "/Hotel-Booking/";
 // Default values
 $level = null;
 $user_id = $_SESSION['user_id'] ?? null;
