@@ -12,7 +12,7 @@ $token = $data['token'];
 $amount = $data['amount'];
 $booking_id = $data['booking_id'];
 
-$secret_key = "test_secret_key_d067b4bfa9c74302a22c0dbaf5b16464";
+$secret_key = "f189176161f64af3813a314c56806647";
 
 $curl = curl_init();
 curl_setopt_array($curl, [
