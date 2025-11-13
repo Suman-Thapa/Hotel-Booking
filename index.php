@@ -73,7 +73,7 @@ if (mysqli_num_rows($result) > 0) {
                     Rooms to book: <input type='number' name='rooms' min='1' max='$maxRooms' required><br>
                     Check-in: <input type='date' name='check_in' required><br>
                     Check-out: <input type='date' name='check_out' required><br>
-                    <button type='submit' id='book-btn'>Book Now</button>
+                    <button type='submit' class='book-btn'>Book Now</button>
                   </form>";
         } else {
             echo "<b class='full'>Rooms Full</b>";
@@ -197,26 +197,8 @@ form[method="GET"] button:hover {
 }
 
 </style>
-
 <script>
-    document.getElementById("book-btn").addEventListener("click", function(event) {
-        const form = this.closest("form");
-        const rooms = form.querySelector("input[name='rooms']").value.trim();
-        const checkIn = form.querySelector("input[name='check_in']").value.trim();
-        const checkOut = form.querySelector("input[name='check_out']").value.trim();
-
-        // Check if any required field is empty
-        if (!rooms || !checkIn || !checkOut) {
-            alert("Please fill all booking details before confirming!");
-            event.preventDefault(); // stop form submission
-            return;
-        }
-
-        // Show confirmation only if fields are filled
-        if (!confirm("Are you sure you want to confirm this booking?")) {
-            event.preventDefault();
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     const forms = document.querySelectorAll('.bookingForm');
 
@@ -224,41 +206,63 @@ form[method="GET"] button:hover {
         const checkIn = form.querySelector('input[name="check_in"]');
         const checkOut = form.querySelector('input[name="check_out"]');
         const roomsInput = form.querySelector('input[name="rooms"]');
+        const bookBtn = form.querySelector('.book-btn');
 
         // Set minimum dates
         checkIn.setAttribute('min', today);
         checkOut.setAttribute('min', today);
 
-        // Update check-out min dynamically
+        // Update check-out min dynamically when check-in changes
         checkIn.addEventListener('change', function() {
             checkOut.setAttribute('min', this.value);
         });
 
-        // Form submission validation
-        form.addEventListener('submit', function(e) {
-            const rooms = parseInt(roomsInput.value);
+        // Attach click listener to the book button
+        bookBtn.addEventListener('click', function(event) {
+            const rooms = roomsInput.value.trim();
+            const checkInDateStr = checkIn.value.trim();
+            const checkOutDateStr = checkOut.value.trim();
+
+            // Check if any required field is empty
+            if (!rooms || !checkInDateStr || !checkOutDateStr) {
+                alert("Please fill all booking details before confirming!");
+                event.preventDefault();
+                return;
+            }
+
+            const roomsNum = parseInt(rooms);
             const maxRooms = parseInt(roomsInput.getAttribute('max'));
+            const checkInDate = new Date(checkInDateStr);
+            const checkOutDate = new Date(checkOutDateStr);
+            const todayDate = new Date(today);
 
-            if (rooms < 1 || rooms > maxRooms) {
-                e.preventDefault();
+            // Validate rooms
+            if (roomsNum < 1 || roomsNum > maxRooms) {
                 alert("You can book between 1 and " + maxRooms + " rooms per booking.");
+                event.preventDefault();
                 return;
             }
 
-            const checkInDate = new Date(checkIn.value);
-            const checkOutDate = new Date(checkOut.value);
-
-            if (checkInDate < new Date(today)) {
-                e.preventDefault();
+            // Validate check-in date
+            if (checkInDate < todayDate) {
                 alert("Check-in date cannot be in the past.");
+                event.preventDefault();
                 return;
             }
 
+            // Validate check-out date
             if (checkOutDate <= checkInDate) {
-                e.preventDefault();
                 alert("Check-out date must be after check-in date.");
+                event.preventDefault();
                 return;
+            }
+
+            // Show confirmation alert
+            if (!confirm("Are you sure you want to confirm this booking?")) {
+                event.preventDefault();
             }
         });
     });
-    </script>
+});
+</script>
+
