@@ -78,10 +78,16 @@ if ($row = mysqli_fetch_assoc($result)) {
             <?php if ($row['payment_status'] != 'paid') : ?>
                 <!-- ✅ Payment Buttons -->
                 <div style="display:flex; gap:10px; margin-top:15px;">
-                    <button id="pay-with-khalti"
+                    <a href="../payment/payment_khalti.php?booking_id=<?= $booking_id ?>
+                    &amount=<?= $total_price ?>
+                    &name=<?=  $row['name'] ?>
+                    &email=<?=  $row['email']?>
+                    &phone=<?=  $row['phone'] ?>">
+                        <button 
                         style="background-color:#5a2a82;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;">
-                        Pay with Khalti
-                    </button>
+                        Pay With Khalti
+                        </button>
+                    </a>
 
                     <form action="<?= $epay_url; ?>" method="POST">
                         <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
@@ -113,51 +119,4 @@ if ($row = mysqli_fetch_assoc($result)) {
 }
 ?>
 
-<!-- ✅ Khalti Integration -->
-<script src="https://khalti.com/static/khalti-checkout.js"></script>
-<script>
-<?php if ($row && $row['payment_status'] != 'paid') : ?>
-const config = {
-    publicKey: "test_public_key_dc74a8c3cf944c10b2b7c9cbd95f41be",
-    productIdentity: "<?= $row['booking_id']; ?>",
-    productName: "<?= addslashes($row['hotel_name']); ?>",
-    productUrl: "http://localhost/Hotel-Booking/user/invoice.php?booking_id=<?= $row['booking_id']; ?>",
-    eventHandler: {
-        onSuccess(payload) {
-            console.log("✅ Payment Success:", payload);
-            fetch("verify_khalti.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    token: payload.token,
-                    amount: payload.amount,
-                    booking_id: "<?= $row['booking_id']; ?>"
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert("✅ Payment successful!");
-                    location.reload();
-                } else {
-                    alert("❌ Payment verification failed: " + data.message);
-                }
-            })
-            .catch(err => alert("❌ Verification error: " + err));
-        },
-        onError(error) {
-            console.error("❌ Khalti Error:", error);
-            alert("Payment failed. Check console for details.");
-        },
-        onClose() {
-            console.log("Khalti popup closed");
-        }
-    }
-};
 
-const checkout = new KhaltiCheckout(config);
-document.getElementById("pay-with-khalti").addEventListener("click", function() {
-    checkout.show({ amount: <?= (int)$total_price * 100; ?> });
-});
-<?php endif; ?>
-</script>
