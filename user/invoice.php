@@ -117,6 +117,8 @@ if ($row = mysqli_fetch_assoc($result)) {
 } else {
     echo "<p style='text-align:center;'>Invoice not found.</p>";
 }
+include '../includes/footer.php';
+
 ?>
 
 

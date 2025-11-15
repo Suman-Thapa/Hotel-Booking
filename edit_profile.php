@@ -41,6 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $result = mysqli_query($con, "SELECT * FROM users WHERE user_id='$user_id'");
 $row = mysqli_fetch_assoc($result);
 ?>
+<div class="wrapper">
+ <div class="content">   
 
 <h2 style="text-align:center;">View / Edit Profile</h2>
 
@@ -81,4 +83,8 @@ $row = mysqli_fetch_assoc($result);
     </div>
 </form>
 
+</div>
+</div>
+
+<?php include 'includes/footer.php' ?>
 </div>

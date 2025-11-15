@@ -2,7 +2,11 @@
 session_start();
 include '../includes/navbar.php';
 include '../includes/connection.php';
+?>
+<div class="wrapper">
+<div class="content">
 
+<?php 
 if (!isset($_SESSION['user_id'])) {
     die("You must <a href='..login/login.php'>login</a> to view bookings.");
 }
@@ -63,7 +67,6 @@ if (!$result) {
         font-weight: bold;
     }
 
-    /* Request Cancellation button - green */
     .booking-card .btn-cancel {
         background-color: #27ae60;
     }
@@ -72,7 +75,6 @@ if (!$result) {
         background-color: #2ecc71;
     }
 
-    /* View Invoice button - blue */
     .booking-card .btn-invoice {
         background-color: #2980b9;
     }
@@ -81,7 +83,6 @@ if (!$result) {
         background-color: #3498db;
     }
 
-    /* Make buttons side by side */
     .booking-card form {
         display: inline-block;
         margin-right: 10px;
@@ -145,6 +146,10 @@ if (mysqli_num_rows($result) > 0) {
         echo "</div>";
     }
 } else {
-    echo "<p class='no-bookings'>You have no bookings yet. Start by <a href='hotels.php'>booking a hotel</a>!</p>";
+    echo "<p class='no-bookings'>You have no bookings yet. Start by <a href='../index.php'>booking a hotel</a>!</p>";
 }
 ?>
+</div>
+<?php include '../includes/footer.php'; ?>
+</div>
+

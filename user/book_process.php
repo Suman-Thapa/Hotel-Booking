@@ -49,4 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Sorry, only " . ($hotel ? $hotel['available_rooms'] : 0) . " rooms are available.";
     }
 }
+include '../includes/footer.php';
+
 ?>

@@ -11,7 +11,8 @@ if (isset($_GET['search'])) {
     $search = sanitize($con, $_GET['search']);
 }
 ?>
-
+<div class="wrapper">
+    <div class="content">
 
 <!-- Search form -->
  <div class="search_area">
@@ -63,7 +64,7 @@ if (mysqli_num_rows($result) > 0) {
         echo "<div class='hotel-details'>";
         echo "<b>" . $row['hotel_name'] . "</b> (" . $row['location'] . ")<br>";
         echo "Available Rooms: " . $row['available_rooms'] . "<br>";
-        echo "Price per Room: $" . $row['price_per_room'] . "<br>";
+        echo "Price per Room: NPR" . $row['price_per_room'] . "<br>";
 
         // Booking form only if rooms available
         if ($row['available_rooms'] > 0) {
@@ -86,6 +87,9 @@ if (mysqli_num_rows($result) > 0) {
     echo "<p>No hotels available at the moment.</p>";
 }
 ?>
+    </div>
+        <?php include 'includes/footer.php'; ?>
+    </div>   
 
 <style>
 /* Hotel card styles */

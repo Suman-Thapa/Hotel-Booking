@@ -34,4 +34,6 @@ if ($row = mysqli_fetch_assoc($result)) {
 } else {
     echo "Hotel not found!";
 }
+include '../includes/footer.php';
+
 ?>
