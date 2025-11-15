@@ -22,7 +22,8 @@ $data_to_sign = "total_amount=$total_amount,transaction_uuid=$transaction_uuid,p
 $signature = base64_encode(hash_hmac('sha256', $data_to_sign, $secret_key, true));
 
 // ✅ Update payments table with new transaction UUID and pending status
-mysqli_query($con, "UPDATE payments SET transaction_id='$transaction_uuid', payment_status='pending' WHERE booking_id=$booking_id");
+mysqli_query($con, "UPDATE payments SET transaction_id='$transaction_uuid', payment_status='pending',
+payment_method='esewa' WHERE booking_id=$booking_id");
 
 // Success / failure URLs (keep clean)
 $success_url = "http://localhost/Hotel-Booking/payment/success_esewa.php?booking_id=$booking_id";

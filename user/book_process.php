@@ -40,8 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_query($con, "INSERT INTO payments 
             (booking_id, amount, payment_method, payment_status,user_id) 
             VALUES ('$booking_id', '$amount', 'credit_card', 'pending',$user_id)");
+        
 
-        // Redirect to invoice (shows unpaid invoice until payment is done)
         header("Location: invoice.php?booking_id=$booking_id");
         exit();
 
