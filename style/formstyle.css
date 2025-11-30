@@ -1,0 +1,191 @@
+   
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+
+    }
+
+    /* Center login box */
+    .login-container,.register-container,
+    .add-hotel-container,
+    .edit-hotel-container,
+    .add-user-container,
+    .edit-user-container{
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .login-form,
+    .register-form
+    {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .login-box,.register-box,
+    .addhotel,
+    .edithotel,
+    .edituser,
+    .adduser,
+    .profile-card{
+        background: white;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        width: 350px;
+        text-align: center;
+    }
+
+    .login-box h2,.register-box h2 {
+        margin-bottom: 25px;
+        color: #0071c2; /* Matching blue */
+        font-size: 24px;
+    }
+
+    
+    input,select
+
+    {
+         box-sizing: border-box;
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+
+    .login-box input:focus,
+    .register-box input:focus {
+        border-color: #0071c2; /* Matching blue */
+        box-shadow: 0 0 4px rgba(0, 113, 194, 0.5);
+    }
+
+     button{
+        width: 100%;
+        padding: 12px;
+        background: #0071c2; /* Matching blue */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+        
+    }
+    
+
+    button:hover {
+
+         background: #005a9b; /* Darker blue on hover */
+
+    }
+
+    
+
+   
+
+    
+
+    .msg ,
+    .error{
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    .success  {
+        color: green;
+        font-size: 14px;
+        margin-top: 20px;
+    }
+
+/* for edit profile css */
+.wrapper {
+    padding: 100px;
+    width: 100%;
+    min-height: calc(100vh - 300px); /* adjust if navbar + footer height ~140px */
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: flex-start;
+   
+    margin-top: 40px;
+    box-sizing: border-box;
+}
+
+.content h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #0071c2;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+}
+.profile-card {
+    background: #f9f9f9;
+    padding: 30px ;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.profile-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+
+label {
+    display: block; 
+    font-weight: bold;
+    font-weight: 500;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+
+
+/* Styling for Edit Hotel and Add hotel for admin */
+
+
+/* .edithotel form,
+.addhotel {
+            background: white;
+            width: 420px;
+            margin: 30px auto;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
+        }
+
+
+
+    h2 { 
+            text-align: center; color: #253a4d; margin-bottom: 20px; 
+    } */
+
+    .form-container{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }

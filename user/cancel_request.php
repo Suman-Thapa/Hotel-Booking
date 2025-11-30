@@ -26,7 +26,7 @@ include '../includes/connection.php';
                 if ($row['status'] == "booked") {
                     $q2 = "UPDATE bookings SET status='cancel_requested' WHERE booking_id='$booking_id'";
                     if (mysqli_query($con, $q2)) {
-                        echo "Cancellation request sent. <a href='my_bookings.php'>Go back</a>";
+                        header('location:my_bookings.php');
                     } else {
                         echo "Error: " . mysqli_error($con);
                     }
@@ -40,6 +40,5 @@ include '../includes/connection.php';
         ?>
     </div>
 
-    <?php include '../includes/footer.php'; ?>
 
 </div>

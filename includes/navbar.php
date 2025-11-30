@@ -3,90 +3,128 @@ if (session_status() == PHP_SESSION_NONE)
 session_start();
 include 'connection.php';
 $base_url = "/Hotel-Booking/";
-// Default values
+
 $level = null;
 $user_id = $_SESSION['user_id'] ?? null;
 
 if ($user_id) {
     $user = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM users WHERE user_id='$user_id'"));
-    $level = (int)$user['level']; // 0 = normal user, 1 = admin
+    $level = (int)$user['level'];
 }
 ?>
 
-<nav style="background:#4CAF50; padding:20px; display:flex; justify-content:space-between; align-items:center;">
-    <div>
-        <!-- Home button works even if not logged in -->
-        <a href="<?php 
-            if ($level === 1) {
-                echo $base_url . 'admin/admin_dashboard.php';
-            } 
-            else {
-                echo $base_url . 'index.php';
-            }
-        ?>">
-        Home</a>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        
+<nav class="navbar">
+    <div class="nav-left">
+        <a class="logo" href="<?php echo ($level === 1) ? $base_url.'hotel-admin/admin_dashboard.php' : $base_url.'index.php'; ?>">
+            HotelBooking
+        </a>
+
         <?php if ($user_id && $level==0): ?>
-            <a href="<?php echo $base_url; ?>user/my_bookings.php">View Bookings</a>
+            <a href="<?php echo $base_url; ?>user/my_bookings.php">My Bookings</a>
         <?php endif; ?>
 
         <?php if ($user_id && $level==1): ?>
-            <a href="<?php echo $base_url; ?>admin/admin_invoices.php">Invoices</a>
-            <a href="<?php echo $base_url; ?>admin/admin_pending_cancellations.php">Pending Cancellations</a>
+            <a href="<?php echo $base_url; ?>hotel-admin/admin_invoices.php">Invoices</a>
+            <a href="<?php echo $base_url; ?>hotel-admin/admin_pending_cancellations.php">Cancellations</a>
         <?php endif; ?>
     </div>
 
-    <div>
+    <div class="nav-right">
         <?php if ($user_id): ?>
-            <a href="<?php echo $base_url; ?>view_profile.php">View Profile</a>
-            
-            <a href="<?php echo $base_url; ?>login/logout.php">Logout</a>
+            <a href="<?php echo $base_url; ?>view_profile.php">Profile</a>
+            <a class="logout-btn" href="<?php echo $base_url; ?>login/logout.php">Logout</a>
         <?php else: ?>
             <a href="<?php echo $base_url; ?>login/login.php">Login</a>
-            <a href="<?php echo $base_url; ?>login/register.php">Register</a>
+            <a class="register-btn" href="<?php echo $base_url; ?>login/register.php">Register</a>
         <?php endif; ?>
     </div>
 </nav>
+
 <style>
-/* Navbar styling */
-nav {
-  background-color: #4CAF50;
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 body {
-  margin: 0;
-  padding: 0;
-  font-size:25px;
+    font-family: "Poppins", sans-serif;
+    margin: 0;       /* remove default margin */
+    padding: 0;      /* remove default padding */
 }
 
-nav a {
+/* NAVBAR BASE */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    width: 100vw;                 /* full width */
+    background: #003b95;
+    color: white;
+    padding: 14px 20px;           /* reduce side padding */
+    display: flex;
+    justify-content: space-between; /* left/right alignment */
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.nav-left a,
+.nav-right a {
     color: white;
     text-decoration: none;
     margin-right: 20px;
-    padding: 8px 14px;
-    border-radius: 6px;
-    transition: background 0.3s, color 0.3s, border-bottom 0.3s;
-    
+    font-size: 15px;
+    font-weight: 400;
 }
 
-nav a:hover {
-    background: rgba(255, 255, 255, 0.25);
+.logo {
+    font-size: 22px;
+    font-weight: 600;
+    margin-right: 25px;
 }
 
-nav a.active {
-    background: white;
-    color: #2E7D32;
-    font-weight: bold;
-    border-bottom: 3px solid #2E7D32; /* underline effect */
+/* Align logout button nicely on the far right */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* space between links */
 }
 
-nav div:last-child a {
+.nav-right a:last-child {
     margin-right: 0;
 }
-</style>
 
+.navbar a:hover {
+    opacity: 0.8;
+}
+
+/* BUTTONS */
+.register-btn,
+.logout-btn {
+    background: #1a73e8;
+    padding: 6px 14px; /* smaller button */
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.register-btn:hover,
+.logout-btn:hover {
+    background: #0057c2;
+}
+
+/* Responsive fix for mobile */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 20px;
+    }
+    .nav-left,
+    .nav-right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+    }
+}
+
+</style>

@@ -27,81 +27,10 @@ if (isset($_SESSION['hotel_msg'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../style/adminstyle.css">
 <title>Admin Dashboard</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-    margin: 0;
-    padding: 0;
-}
-.container {
-    width: 90%;
-    margin: 30px auto;
-}
-h2 {
-    text-align: center;
-    color: #2e7d32;
-    margin-bottom: 20px;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-}
-table th, table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
-table th {
-    background: #2e7d32;
-    color: white;
-}
-img {
-    width: 100px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 6px;
-}
-.add-btn {
-    display: block;
-    width: 180px;
-    text-align: center;
-    padding: 10px;
-    background: #2e7d32;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    margin: 10px auto;
-}
-.add-btn:hover {
-    background: #1b5e20;
-}
-.msg {
-    width: 90%;
-    margin: 10px auto;
-    padding: 10px;
-    border-radius: 6px;
-    text-align: center;
-    font-weight: bold;
-}
-.msg.success { background: #c8e6c9; color: #256029; }
-.msg.error { background: #ffcdd2; color: #c62828; }
-.action-btn {
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-}
-.edit-btn { background: #0288d1; }
-.delete-btn { background: #c62828; }
-.action-btn:hover { opacity: 0.8; }
+
 </style>
 </head>
 <body>

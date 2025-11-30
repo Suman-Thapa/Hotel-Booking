@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'connection.php';
-include 'functions.php';
+include '../include/connection.php';
+include '../includes/functions.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['level'] != 1) {
     header("Location: login.php");

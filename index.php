@@ -2,6 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
 include 'includes/navbar.php';
 include 'includes/connection.php';
 include 'includes/functions.php';
@@ -11,262 +12,98 @@ if (isset($_GET['search'])) {
     $search = sanitize($con, $_GET['search']);
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="style/userstyle.css">
+</head>
+<body>
+    
 <div class="wrapper">
     <div class="content">
 
-<!-- Search form -->
- <div class="search_area">
-     
-     <form method="GET" action="">
-         <input type="text" name="search" placeholder="Search by hotel name or location" 
-         value="<?php echo htmlspecialchars($search); ?>">
-         <button type="submit">Search</button>
-     </form>
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-overlay">
+        <form method="GET" action="" class="search-box">
+            <input type="text" name="search" placeholder="Search hotel or location..."
+                   value="<?php echo htmlspecialchars($search); ?>">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</div>
 
- </div>
-
-<hr>
-
+<!-- Hotels Listing -->
+<div class="hotels-container">
 <?php
-// Show all hotels or filter by search
 $query = "SELECT * FROM hotels WHERE available_rooms > 0";
 if (!empty($search)) {
-    $search_safe = mysqli_real_escape_string($con, $search);
-    $query .= " AND (hotel_name LIKE '%$search_safe%' OR location LIKE '%$search_safe%')";
+    $s = mysqli_real_escape_string($con, $search);
+    $query .= " AND (hotel_name LIKE '%$s%' OR location LIKE '%$s%')";
 }
 
 $result = mysqli_query($con, $query);
 
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
-        echo "<div class='hotel-card'>";
-
-        // Hotel image
-        // Hotel image
-    $imagePath = "uploads/hotels/" . $row['hotel_image'];
-
-    if (!empty($row['hotel_image']) && file_exists($imagePath)) {
-        echo "<div class='hotel-image'>
-            <a href='$imagePath' target='_blank'>
-                <img src='$imagePath' alt='Hotel Image'>
-            </a>
-        </div>";
-} 
-
-    else {
-        echo "<div class='hotel-image'>
-            <img src='https://via.placeholder.com/150x100?text=No+Image' alt='No Image'>
-        </div>";
-    }
-
-
-        // Hotel details
-        echo "<div class='hotel-details'>";
-        echo "<b>" . $row['hotel_name'] . "</b> (" . $row['location'] . ")<br>";
-        echo "Available Rooms: " . $row['available_rooms'] . "<br>";
-        echo "Price per Room: NPR" . $row['price_per_room'] . "<br>";
-
-        // Booking form only if rooms available
-        if ($row['available_rooms'] > 0) {
-            $maxRooms = $row['available_rooms'] < 5 ? $row['available_rooms'] : 5;
-            echo "<form class='bookingForm' method='POST' action='user/book_process.php'>
-                    <input type='hidden' name='hotel_id' value='" . $row['hotel_id'] . "'>
-                    Rooms to book: <input type='number' name='rooms' min='1' max='$maxRooms' required><br>
-                    Check-in: <input type='date' name='check_in' required><br>
-                    Check-out: <input type='date' name='check_out' required><br>
-                    <button type='submit' class='book-btn'>Book Now</button>
-                  </form>";
-        } else {
-            echo "<b class='full'>Rooms Full</b>";
+        $image = "uploads/hotels/" . $row['hotel_image'];
+        if (!file_exists($image) || empty($row['hotel_image'])) {
+            $image = "https://via.placeholder.com/260x180?text=No+Image";
         }
+?>
+        <div class="hotel-card">
+            <div class="hotel-image">
+                <img src="<?= $image ?>" alt="">
+            </div>
+            <div class="hotel-info">
+                <h2 class="hotel-title"><?= $row['hotel_name'] ?></h2>
+                <p class="hotel-location"><?= $row['location'] ?></p>
+                <p class="price-label">Price per night</p>
+                <p class="hotel-price">NPR <?= number_format($row['price_per_room'], 2) ?></p>
 
-        echo "</div>"; // hotel-details
-        echo "</div>"; // hotel-card
+                <form method="POST" action="user/check_avilabilty.php" class="book-form">
+                    <input type="hidden" name="hotel_id" value="<?= $row['hotel_id'] ?>">
+                    <div class="form-row">
+                        <div>
+                            <label>Check-in</label>
+                            <input type="date" name="check_in" required>
+                        </div>
+                        <div>
+                            <label>Check-out</label>
+                            <input type="date" name="check_out" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div style="width:100%;">
+                            <label>Rooms</label>
+                            <select name="rooms">
+                                <?php 
+                                for ($i = 1; $i <= min(5, $row['available_rooms']); $i++) {
+                                    echo "<option value='$i'>$i Room(s)</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="check-btn" type="submit">Check Availability</button>
+                </form>
+            </div>
+        </div>
+<?php
     }
 } else {
-    echo "<p>No hotels available at the moment.</p>";
+    echo "<p class='no-hotels'>No hotels found.</p>";
 }
 ?>
+</div>
     </div>
-        <?php include 'includes/footer.php'; ?>
-    </div>   
+</div>
 
-<style>
-/* Hotel card styles */
-.search_area {
-    background-image: url('uploads/hotels/Room5.jpg');
-    background-size: cover; 
-    background-position: center;
-    height: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+<?php include 'includes/footer.php'; ?>
 
-.hotel-card {
-    border: 1px solid #c8e6c9;
-    background-color: #f0fdf4;
-    padding: 15px;
-    margin: 15px 0;
-    display: flex;
-    border-radius: 8px;
-}
 
-.hotel-image img {
-    width: 150px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-right: 20px;
-}
-
-.hotel-details {
-    flex: 1;
-    font-size: 14px;
-    color: #1b5e20;
-}
-
-.hotel-details b {
-    font-size: 16px;
-    color: #2e7d32;
-}
-
-.bookingForm input[type="number"],
-.bookingForm input[type="date"] {
-    padding: 5px;
-    margin: 5px 0;
-    border-radius: 5px;
-    border: 1px solid #a5d6a7;
-}
-
-.bookingForm button {
-    padding: 8px 12px;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 5px;
-    font-weight: bold;
-}
-
-.bookingForm button:hover {
-    background-color: #1b5e20;
-}
-
-.full {
-    color: red;
-    font-weight: bold;
-}
-/* Search form styling */
-form[method="GET"] {
-    width: 500px;
-    /* top | right | bottom | left */
-    padding: 20px 10px 8px 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-form[method="GET"] input[type="text"] {
-    flex: 1;
-    width: 100%;
-    padding: 10px 30px 10px 10px; 
-    border: 1px solid #a5d6a7;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
-    transition: 0.3s;
-    font-size:18px;
-}
-
-form[method="GET"] input[type="text"]:focus {
-    border-color: #2e7d32;
-    box-shadow: 0 0 4px rgba(46,125,50,0.5);
-}
-
-form[method="GET"] button {
-    padding: 14px 25px;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-form[method="GET"] button:hover {
-    background-color: #1b5e20;
-}
-
-</style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    const forms = document.querySelectorAll('.bookingForm');
-
-    forms.forEach(form => {
-        const checkIn = form.querySelector('input[name="check_in"]');
-        const checkOut = form.querySelector('input[name="check_out"]');
-        const roomsInput = form.querySelector('input[name="rooms"]');
-        const bookBtn = form.querySelector('.book-btn');
-
-        // Set minimum dates
-        checkIn.setAttribute('min', today);
-        checkOut.setAttribute('min', today);
-
-        // Update check-out min dynamically when check-in changes
-        checkIn.addEventListener('change', function() {
-            checkOut.setAttribute('min', this.value);
-        });
-
-        // Attach click listener to the book button
-        bookBtn.addEventListener('click', function(event) {
-            const rooms = roomsInput.value.trim();
-            const checkInDateStr = checkIn.value.trim();
-            const checkOutDateStr = checkOut.value.trim();
-
-            // Check if any required field is empty
-            if (!rooms || !checkInDateStr || !checkOutDateStr) {
-                alert("Please fill all booking details before confirming!");
-                event.preventDefault();
-                return;
-            }
-
-            const roomsNum = parseInt(rooms);
-            const maxRooms = parseInt(roomsInput.getAttribute('max'));
-            const checkInDate = new Date(checkInDateStr);
-            const checkOutDate = new Date(checkOutDateStr);
-            const todayDate = new Date(today);
-
-            // Validate rooms
-            if (roomsNum < 1 || roomsNum > maxRooms) {
-                alert("You can book between 1 and " + maxRooms + " rooms per booking.");
-                event.preventDefault();
-                return;
-            }
-
-            // Validate check-in date
-            if (checkInDate < todayDate) {
-                alert("Check-in date cannot be in the past.");
-                event.preventDefault();
-                return;
-            }
-
-            // Validate check-out date
-            if (checkOutDate <= checkInDate) {
-                alert("Check-out date must be after check-in date.");
-                event.preventDefault();
-                return;
-            }
-
-            // Show confirmation alert
-            if (!confirm("Are you sure you want to confirm this booking?")) {
-                event.preventDefault();
-            }
-        });
-    });
-});
-</script>
-
+</body>
+</html>

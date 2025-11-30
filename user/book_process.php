@@ -5,7 +5,7 @@ include '../includes/connection.php';
 include '../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
-    die("You must <a href='../login/login.php'>login</a> to book.");
+    header('../login/login.php');
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

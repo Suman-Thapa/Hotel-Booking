@@ -27,7 +27,9 @@ if (isset($_POST['booking_id'])) {
             // Add rooms back to hotel availability
             mysqli_query($con, "UPDATE hotels SET available_rooms = available_rooms + $rooms WHERE hotel_id='$hotel_id'");
 
-            echo "Cancellation approved successfully! <a href='admin_pending_cancellations.php'>Go Back</a>";
+            header('Location: admin_pending_cancellations.php');
+            exit();
+
         } else {
             echo "This booking cannot be canceled.";
         }

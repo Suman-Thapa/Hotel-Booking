@@ -14,33 +14,40 @@ $user_id = $_SESSION['user_id'];
 $result = mysqli_query($con, "SELECT * FROM users WHERE user_id='$user_id'");
 $row = mysqli_fetch_assoc($result);
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Profile</title>
+    <link rel="stylesheet" href="style/formstyle.css">
+</head>
+<body>
+    
+</body>
+</html>
 <div class="wrapper">
     <div class="content">
-    <h2 style="text-align:center;">My Profile</h2>
+        <h2>My Profile</h2>
 
-    <div style="width:400px; margin:auto; border:1px solid #ccc; padding:20px; text-align:center;">
-        <?php
-        // Display current user image
-        $img_path = "uploads/user/" . $row['user_image'];
-        if (!empty($row['user_image']) && file_exists($img_path)) {
-            echo "<img src='" . str_replace('\\','/',$img_path) . "' style='width:120px; height:120px; object-fit:cover; border-radius:50%; margin-bottom:10px;'>";
-        } else {
-            echo "<img src='uploads/user/default.png' style='width:120px; height:120px; object-fit:cover; border-radius:50%; margin-bottom:10px;'>";
-        }
-        ?>
+        <div class="profile-card">
+            <?php
+            // Display current user image
+            $img_path = "uploads/user/" . $row['user_image'];
+            if (!empty($row['user_image']) && file_exists($img_path)) {
+                echo "<img src='" . str_replace('\\','/',$img_path) . "' class='profile-img'>";
+            } else {
+                echo "<img src='uploads/user/default.png' class='profile-img'>";
+            }
+            ?>
 
-    <p><b>Name:</b> <?php echo htmlspecialchars($row['name']); ?></p>
-    <p><b>Email:</b> <?php echo htmlspecialchars($row['email']); ?></p>
+            <p><b>Name:</b> <?php echo htmlspecialchars($row['name']); ?></p>
+            <p><b>Email:</b> <?php echo htmlspecialchars($row['email']); ?></p>
 
-    <a href="edit_profile.php" 
-    style="display:inline-block; 
-    padding:10px 20px; 
-    background:green; 
-    color:white; 
-    text-decoration:none; 
-    border-radius:5px;
-     margin-top:10px;">Edit Profile</a>
-</div>
+           <a href="edit_profile.php" class="edit-btn"> <button>Edit Profile</button></a>
+        </div>
     </div>
-<?php include 'includes/footer.php' ?>
 </div>
+
+    <?php include 'includes/footer.php' ?>
+

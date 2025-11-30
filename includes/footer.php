@@ -1,32 +1,24 @@
-<footer class="footer-full">
+<footer class="footer">
     <div class="footer-inner">
 
-        <div class="footer-section">
-            <strong>&copy; <?php echo date("Y"); ?> All rights reserved by Suman and Samriddha</strong>
+        <div class="footer-col">
+            <h4>HotelBooking</h4>
+            <p>&copy; <?php echo date("Y"); ?> Suman & Samriddha</p>
         </div>
 
-        <div class="footer-section contact-clean">
-            <strong>Contact Us</strong><br>
-
-            <div class="contact-line">
-                <span class="icon">📧</span>
-                <strong>Email:</strong>
-                <a href="mailto:Suman123@gmail.com">Suman123@gmail.com</a> |
-                <a href="mailto:Samriddha123@gmail.com">Samriddha123@gmail.com</a>
-            </div>
-
-            <div class="contact-line">
-                <span class="icon">📞</span>
-                <strong>Phone:</strong>
-                9810000000 (Suman) | 9820000000 (Samriddha)
-            </div>
+        <div class="footer-col">
+            <h4>Contact Us</h4>
+            <p>📧 Suman123@gmail.com</p>
+            <p>📧 Samriddha123@gmail.com</p>
+            <p>📞 9810000000</p>
+            <p>📞 9820000000</p>
         </div>
 
-        <div class="footer-section">
-            <strong>We accept payment via:</strong>
+        <div class="footer-col">
+            <h4>Payment Methods</h4>
             <div class="payment-icons">
-                <img src="/Hotel-Booking/uploads/esewa.png" alt="eSewa" class="payment-logo">
-                <img src="/Hotel-Booking/uploads/khalti.png" alt="Khalti" class="payment-logo">
+                <img src="/Hotel-Booking/uploads/esewa.png" class="pay-logo">
+                <img src="/Hotel-Booking/uploads/khalti.png" class="pay-logo">
             </div>
         </div>
 
@@ -34,96 +26,62 @@
 </footer>
 
 <style>
-    html, body {
-    height: 100%;
-    margin: 0;
-}
-
-.wrapper {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.content {
-    flex: 1; 
-}
-
-
-.footer-full {
-    width: 100%;
-    background-color: #4CAF50;
+.footer  {
+    background: #F5F1DC;
+    padding: 40px 10px;
+    margin-top: 40px;
 }
 
 .footer-inner {
-    text-align: center;
-    color: #000;
-    padding: 30px 10px;
-    font-family: Arial, sans-serif;
-}
-
-/* Footer sections */
-.footer-section {
-    margin-bottom: 20px;
-    font-size: 18px;
-    line-height: 1.6;
-}
-
-
-.contact-clean {
-    font-size: 18px;
-    line-height: 1.8;
-    margin-top: 10px;
-}
-
-.contact-line {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     flex-wrap: wrap;
-    margin: 3px 0;
 }
 
-.contact-line .icon {
-    font-size: 20px;
+.footer-col {
+    width: 30%;
+    min-width: 200px;
+    margin-bottom: 25px;
 }
 
-.contact-clean a {
-    color: #000;
-    text-decoration: underline;
-    font-weight: bold;
+.footer-col h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: black;
 }
 
-.contact-line strong {
-    margin-right: 5px;
+.footer-col p {
+    color: black;
+    font-size: 15px;
+    margin: 5px 0;
 }
 
 .payment-icons {
     margin-top: 10px;
 }
 
-.payment-logo {
-    height: 45px;
-    margin: 0 12px;
-    transition: transform 0.25s;
-    vertical-align: middle;
+.pay-logo {
+    height: 40px;
+    margin-right: 12px;
+    transition: 0.25s;
 }
 
-.payment-logo:hover {
-    transform: scale(1.12);
+.pay-logo:hover {
+    transform: scale(1.1);
 }
 
-@media (max-width: 600px) {
-    .footer-section {
-        font-size: 16px;
+/* MOBILE */
+@media(max-width: 600px) {
+    .footer-inner {
+        text-align: center;
     }
-    .contact-line {
-        font-size: 16px;
-    }
-    .payment-logo {
-        height: 38px;
+
+    .footer-col {
+        width: 100%;
     }
 }
-
 </style>
