@@ -1,29 +1,45 @@
 <?php
 session_start();
 include '../includes/connection.php';
+include '../includes/functions.php';
 include '../includes/navbar.php';
 
-if (!isset($_SESSION['user_id'])) {
+// Ensure user is logged in
+check_login();
+
+$user_id = $_SESSION['user_id'] ?? 0;
+if (!$user_id) {
     die("You must <a href='../login/login.php'>login</a> to view the invoice.");
 }
 
-if (!isset($_GET['booking_id'])) {
-    die("Booking ID not provided!");
+// Get booking ID
+$booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
+if ($booking_id < 1) {
+    die("Invalid Booking ID.");
 }
 
-$booking_id = (int) $_GET['booking_id'];
-$user_id = (int) $_SESSION['user_id'];
+/*
+    FIXED JOIN:
+    Previously: you joined hotel_room ON hotel_id, which returned WRONG room.
+    NOW: hotel_room is joined using room_id from booking.
+*/
 
-// Fetch booking + user + hotel + payment
 $query = "
-    SELECT b.*, u.name, u.email, 
-           h.hotel_name, h.location, h.price_per_room, h.hotel_image,
-           p.payment_status, p.amount
+    SELECT 
+        b.*, 
+        u.name, u.email,
+        h.hotel_name, h.location, h.hotel_image,
+        hr.room_number, hr.room_type, hr.price_per_room, 
+        hr.about_rooms, hr.room_image,
+        p.payment_status, p.amount
     FROM bookings b
     JOIN users u ON b.user_id = u.user_id
     JOIN hotels h ON b.hotel_id = h.hotel_id
+    JOIN hotel_room hr ON b.room_id = hr.room_id   -- FIXED JOIN
     JOIN payments p ON b.booking_id = p.booking_id
-    WHERE b.booking_id = $booking_id AND b.user_id = $user_id
+    WHERE b.booking_id = $booking_id
+      AND b.user_id = $user_id       -- Prevent viewing another user's invoice
+    LIMIT 1
 ";
 
 $result = mysqli_query($con, $query);
@@ -31,37 +47,40 @@ if (!$result) {
     die("Query failed: " . mysqli_error($con));
 }
 
-if ($row = mysqli_fetch_assoc($result)) {
+$row = mysqli_fetch_assoc($result);
+if (!$row) {
+    die("<p style='text-align:center;'>Invoice not found or you don't have permission to view it.</p>");
+}
 
-    $check_in = new DateTime($row['check_in']);
-    $check_out = new DateTime($row['check_out']);
-    $nights = $check_in->diff($check_out)->days ?: 1;
-    $total_price = $row['rooms_booked'] * $row['price_per_room'] * $nights;
+// Calculate nights
+$check_in = new DateTime($row['check_in']);
+$check_out = new DateTime($row['check_out']);
+$nights = max(1, $check_in->diff($check_out)->days);
 
-    $imagePath = "../uploads/hotels/" . $row['hotel_image'];
-    if (!file_exists($imagePath) || empty($row['hotel_image'])) {
-        $imagePath = "https://via.placeholder.com/400x300?text=No+Image";
-    }
+// Total price
+$total_price = $row['rooms_booked'] * $row['price_per_room'] * $nights;
 
-    $epay_url = "../payment/payment_esewa.php";
+// Room image
+$imagePath = "../uploads/rooms/" . $row['room_image'];
+if (!file_exists($imagePath) || empty($row['room_image'])) {
+    $imagePath = "https://via.placeholder.com/400x300?text=No+Image";
+}
+
+$epay_url = "../payment/payment_esewa.php";
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice</title>
-    <link rel="stylesheet" href="../style/userstyle.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice</title>
+<link rel="stylesheet" href="../style/userinvoice.css">
 </head>
 <body>
-    
-</body>
-</html>
+
 <div class="invoice-container">
 
     <div class="invoice-left">
-
         <h2>Hotel Booking Invoice</h2>
         <hr>
 
@@ -70,14 +89,18 @@ if ($row = mysqli_fetch_assoc($result)) {
 
         <h3>Customer Details</h3>
         <p>
-            <b>Name:</b> <?= $row['name']; ?><br>
-            <b>Email:</b> <?= $row['email']; ?>
+            <b>Name:</b> <?= htmlspecialchars($row['name']); ?><br>
+            <b>Email:</b> <?= htmlspecialchars($row['email']); ?>
         </p>
 
-        <h3>Hotel Details</h3>
+        <h3>Hotel & Room Details</h3>
         <p>
-            <b>Hotel:</b> <?= $row['hotel_name']; ?><br>
-            <b>Location:</b> <?= $row['location']; ?>
+            <b>Hotel:</b> <?= htmlspecialchars($row['hotel_name']); ?><br>
+            <b>Location:</b> <?= htmlspecialchars($row['location']); ?><br>
+            <b>Room No:</b> <?= htmlspecialchars($row['room_number']); ?><br>
+            <b>Room Type:</b> <?= htmlspecialchars($row['room_type']); ?><br>
+            <b>Room Info:</b> <?= htmlspecialchars($row['about_rooms']); ?><br>
+            <b>Price per Room:</b> Rs. <?= number_format($row['price_per_room'], 2); ?>
         </p>
 
         <h3>Booking Details</h3>
@@ -85,20 +108,17 @@ if ($row = mysqli_fetch_assoc($result)) {
             <b>Check-in:</b> <?= $row['check_in']; ?><br>
             <b>Check-out:</b> <?= $row['check_out']; ?><br>
             <b>Nights:</b> <?= $nights; ?><br>
-            <b>Rooms:</b> <?= $row['rooms_booked']; ?><br>
-            <b>Price Per Room:</b> Rs. <?= $row['price_per_room']; ?><br>
+            <b>Rooms Booked:</b> <?= $row['rooms_booked']; ?><br>
             <b>Total Price:</b> Rs. <?= number_format($total_price, 2); ?><br>
-
             <b>Payment Status:</b>
-            <span style="color:<?= $row['payment_status']=='paid'?'green':'red'; ?>">
+            <span style="color:<?= $row['payment_status']=='paid'?'green':'red'; ?>;">
                 <?= ucfirst($row['payment_status']); ?>
             </span>
         </p>
 
-        <?php if ($row['payment_status'] != 'paid') : ?>
+        <?php if ($row['payment_status'] != 'paid'): ?>
         <div class="payment-buttons">
-
-            <a href="../payment/payment_khalti.php?booking_id=<?= $booking_id ?>&amount=<?= $total_price ?>&name=<?= $row['name'] ?>&email=<?= $row['email'] ?>">
+            <a href="../payment/payment_khalti.php?booking_id=<?= $booking_id ?>&amount=<?= $total_price ?>&name=<?= urlencode($row['name']) ?>&email=<?= urlencode($row['email']) ?>">
                 <button class="btn-pay khalti">Pay With Khalti</button>
             </a>
 
@@ -107,14 +127,12 @@ if ($row = mysqli_fetch_assoc($result)) {
                 <input type="hidden" name="total_amount" value="<?= $total_price; ?>">
                 <button class="btn-pay esewa" type="submit">Pay with eSewa</button>
             </form>
-
         </div>
         <?php endif; ?>
-
     </div>
 
     <div class="invoice-right">
-        <img src="<?= $imagePath; ?>" alt="Hotel Image">
+        <img src="<?= $imagePath; ?>" alt="Room Image">
     </div>
 
 </div>
@@ -125,10 +143,6 @@ if ($row = mysqli_fetch_assoc($result)) {
     <button class="print-btn" onclick="window.print()">🖨️ Print Invoice</button>
 </div>
 
-<?php
-} else {
-    echo "<p style='text-align:center;'>Invoice not found.</p>";
-}
-
-include '../includes/footer.php';
-?>
+<?php include '../includes/footer.php'; ?>
+</body>
+</html>

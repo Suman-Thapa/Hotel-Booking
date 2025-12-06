@@ -3,56 +3,63 @@ session_start();
 include '../includes/connection.php';
 include '../includes/navbar.php';
 
-// Only admin can access
-if (!isset($_SESSION['user_id']) || $_SESSION['level'] != 1) {
-    die("Access denied. <a href='login.php'>Login as Admin</a>");
+if ($_SESSION['level'] != 'hoteladmin') {
+    header("Location: ../login/login.php");
+    exit();
 }
 
 // Fetch pending cancellation requests
-$query = "SELECT b.booking_id, b.user_id, b.hotel_id, b.rooms_booked, b.check_in, b.check_out, b.status, 
-                 h.hotel_name, h.available_rooms, u.name
-          FROM bookings b
-          JOIN hotels h ON b.hotel_id = h.hotel_id
-          JOIN users u ON b.user_id = u.user_id
-          WHERE b.status='cancel_requested'
-          ORDER BY b.booking_id DESC";
+$query = "
+    SELECT 
+        b.booking_id, b.user_id, b.hotel_id, b.rooms_booked, b.check_in, b.check_out, b.status, 
+        h.hotel_name, u.name,
+        hr.room_number, hr.price_per_room AS room_price, hr.room_image
+    FROM bookings b
+    JOIN hotels h ON b.hotel_id = h.hotel_id
+    JOIN users u ON b.user_id = u.user_id
+    JOIN hotel_room hr ON b.room_id = hr.room_id
+    WHERE b.status='cancel_requested'
+    ORDER BY b.booking_id DESC
+";
 
 $result = mysqli_query($con, $query);
-
-echo "<div class='All-Contain'> ";
-echo "<h2>Pending Cancellation Requests</h2>";
-
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo "<div class='request-card'>";
-        echo "<b>User:</b> " . $row['name'] . "<br>";
-        echo "<b>Hotel:</b> " . $row['hotel_name'] . "<br>";
-        echo "<b>Rooms Booked:</b> " . $row['rooms_booked'] . "<br>";
-        echo "<b>Check-in:</b> " . $row['check_in'] . "<br>";
-        echo "<b>Check-out:</b> " . $row['check_out'] . "<br>";
-        echo "<b>Status:</b> " . ucfirst($row['status']) . "<br>";
-
-        echo "<form method='POST' action='approve_cancel.php'>
-                <input type='hidden' name='booking_id' value='" . $row['booking_id'] . "'>
-                <button type='submit'>Approve Cancellation</button>
-              </form>";
-        echo "</div>";
-    }
-} else {
-    echo "<p class='no-requests'>No pending cancellation requests.</p>";
-    echo "</div>";
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Cancelation</title>
-    <link rel="stylesheet" href="../style/adminstyle.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Cancellation Requests</title>
+<link rel="stylesheet" href="../style/adminstyle.css">
 </head>
 <body>
-    
+
+<div class="All-Contain">
+    <h2>Pending Cancellation Requests</h2>
+
+    <?php if (mysqli_num_rows($result) > 0): ?>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <div class="request-card">
+                <b>User:</b> <?= htmlspecialchars($row['name']); ?><br>
+                <b>Hotel:</b> <?= htmlspecialchars($row['hotel_name']); ?><br>
+                <b>Room Number:</b> <?= htmlspecialchars($row['room_number']); ?><br>
+                <b>Room Price:</b> Rs. <?= number_format($row['room_price'], 2); ?><br>
+                <b>Rooms Booked:</b> <?= $row['rooms_booked']; ?><br>
+                <b>Check-in:</b> <?= $row['check_in']; ?><br>
+                <b>Check-out:</b> <?= $row['check_out']; ?><br>
+                <b>Status:</b> <?= ucfirst($row['status']); ?><br>
+
+                <form method="POST" action="approve_cancel.php">
+                    <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
+                    <button type="submit">Approve Cancellation</button>
+                </form>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p class="no-requests">No pending cancellation requests.</p>
+    <?php endif; ?>
+</div>
+
 </body>
 </html>

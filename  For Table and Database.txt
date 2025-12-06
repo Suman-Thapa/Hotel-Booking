@@ -75,3 +75,24 @@ CREATE TABLE payments (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+
+
+/// aditional
+
+
+CREATE TABLE bookings (
+    booking_id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11) NOT NULL,            -- FK to users table
+    hotel_id INT(11) NOT NULL,           -- FK to hotels table
+    room_id INT(11) NOT NULL,            -- FK to hotel_room table
+    rooms_booked INT(11) NOT NULL,       -- number of rooms booked
+    check_in DATE NOT NULL,
+    check_out DATE NOT NULL,
+    status ENUM('booked','cancel_requested','canceled') DEFAULT 'booked',
+    booked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Foreign Key Constraints
+    CONSTRAINT fk_booking_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_booking_hotel FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id) ON DELETE CASCADE,
+    CONSTRAINT fk_booking_room FOREIGN KEY (room_id) REFERENCES hotel_room(room_id) ON DELETE CASCADE
+);

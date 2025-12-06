@@ -10,21 +10,33 @@ if(isset($_POST['submit'])){
     $name = trim($_POST['username']);
     $password = trim($_POST['password']);
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $value = trim($_POST['select-user']);
+    $role = trim($_POST['select-user']);
     $email = trim($_POST['email']);
 
+    // 1. Insert new user
     $query = "INSERT INTO users (name, email, password, level)
-              VALUES ('$name', '$email', '$hashed_password', '$value')";
+              VALUES ('$name', '$email', '$hashed_password', '$role')";
 
-    if(mysqli_query($con,$query)){
-        header('location:index.php');
-        exit();
+    if(mysqli_query($con, $query)){
+
+        // 2. Get inserted user_id
+        $newUserId = mysqli_insert_id($con);
+
+        // Optional: if role = hoteladmin, store in session for next step
+        if($role == 'hoteladmin'){
+            header("Location: addhotel.php?admin_id=" . $newUserId);
+            exit();
+    }
+
+
+        
+
     } else {
         $sucessmsg = "Problem in user creation: " . mysqli_error($con);
     }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

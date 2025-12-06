@@ -3,8 +3,8 @@ session_start();
 include '../include/connection.php';
 include '../includes/functions.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['level'] != 1) {
-    header("Location: login.php");
+if ($_SESSION['level'] != 'hoteladmin') {
+    header("Location: ../login/login.php");
     exit();
 }
 
@@ -16,13 +16,13 @@ if (isset($_GET['id'])) {
     try {
         mysqli_begin_transaction($con);
 
-        $deleteQuery = "DELETE FROM hotels WHERE hotel_id='$id'";
+        $deleteQuery = "DELETE FROM hotel_room WHERE room_id='$id'";
         mysqli_query($con, $deleteQuery);
 
         mysqli_commit($con);
 
         $_SESSION['hotel_msg'] = [
-            "text" => "Hotel deleted successfully!",
+            "text" => "Room deleted successfully!",
             "type" => "success"
         ];
     } 
@@ -31,12 +31,11 @@ if (isset($_GET['id'])) {
 
     // Friendly message for the user
     $_SESSION['hotel_msg'] = [
-        "text" => "Cannot delete hotel! It has bookings linked to it.",
+        "text" => "Cannot delete Room! It has bookings linked to it.",
         "type" => "error"
     ];
 
-    // (Optional) If you want to debug, log the real error to a file
-    // error_log("Delete Hotel Error: " . $e->getMessage());
+   
 }
 
 

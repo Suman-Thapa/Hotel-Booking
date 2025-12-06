@@ -20,6 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $row['password'])) {
             $_SESSION['user_id'] = $row['user_id'];
             $_SESSION['level']   = $row['level'];
+            $_SESSION['name']   = $row['name'];
+            
 
             if ($row['level'] == 'hoteladmin') {
                 header("Location: ../hotel-admin/admin_dashboard.php");
@@ -60,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Login</h2>
         
         <form method="POST" class="login-form">
-            <input type="text" name="email" placeholder="Email" value="<?php echo $email_value; ?>" required>
+            <input type="text" name="email" placeholder="Email">
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="submit">Login</button>
         </form>

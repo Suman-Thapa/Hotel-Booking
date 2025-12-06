@@ -9,10 +9,11 @@
 
     /* Center login box */
     .login-container,.register-container,
-    .add-hotel-container,
+    .add-room-container,
     .edit-hotel-container,
     .add-user-container,
-    .edit-user-container{
+    .edit-user-container,
+    .add-hotel-container{
         width: 100%;
         min-height: 100vh;
         display: flex;
@@ -29,7 +30,7 @@
     }
 
     .login-box,.register-box,
-    .addhotel,
+    .addhotel,.addroom,
     .edithotel,
     .edituser,
     .adduser,
@@ -49,7 +50,7 @@
     }
 
     
-    input,select
+    input,select,textarea
 
     {
          box-sizing: border-box;
@@ -112,7 +113,7 @@
 
 /* for edit profile css */
 .wrapper {
-    padding: 100px;
+    padding: 60px;
     width: 100%;
     min-height: calc(100vh - 300px); /* adjust if navbar + footer height ~140px */
     display: flex;
@@ -120,7 +121,7 @@
     justify-content: center;
     align-items: flex-start;
    
-    margin-top: 40px;
+    /* margin-top: 40px; */
     box-sizing: border-box;
 }
 
@@ -189,3 +190,7 @@ label {
         flex-direction: column;
         gap: 20px;
     }
+
+    
+
+    

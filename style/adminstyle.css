@@ -12,6 +12,7 @@
     .container {
             width: 90%;
             margin: 30px auto;
+            padding: 15px;
     }
     h2 {
             text-align: center;

@@ -14,18 +14,18 @@ $epay_url = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
 $product_code = "EPAYTEST";
 $secret_key = "8gBm/:&EnhH.1/q";
 
-// ✅ Generate unique transaction ID per attempt
+
 $transaction_uuid = "BKNG_" . uniqid();
 
-// ✅ Prepare signature using correct variable
+
 $data_to_sign = "total_amount=$total_amount,transaction_uuid=$transaction_uuid,product_code=$product_code";
 $signature = base64_encode(hash_hmac('sha256', $data_to_sign, $secret_key, true));
 
-// ✅ Update payments table with new transaction UUID and pending status
+
 mysqli_query($con, "UPDATE payments SET transaction_id='$transaction_uuid', payment_status='pending',
 payment_method='esewa' WHERE booking_id=$booking_id");
 
-// Success / failure URLs (keep clean)
+
 $success_url = "http://localhost/Hotel-Booking/payment/success_esewa.php?booking_id=$booking_id";
 $failure_url = "http://localhost/Hotel-Booking/payment/failure_esewa.php?booking_id=$booking_id";
 ?>

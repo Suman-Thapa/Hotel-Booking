@@ -30,71 +30,72 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings</title>
 
-        <link rel="stylesheet" href="../style/userstyle.css">
+        <link rel="stylesheet" href="../style/mybooking.css">
 
 
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="mybookingh2">
-        <h2>My Bookings</h2>
-    </div>
-
-    <?php if (mysqli_num_rows($result) > 0): ?>
-        <?php while ($row = mysqli_fetch_assoc($result)): 
-            $check_in = date("d M Y", strtotime($row['check_in']));
-            $check_out = date("d M Y", strtotime($row['check_out']));
-        ?>
-        
-        <div class="booking-card">
-            <b><?= htmlspecialchars($row['hotel_name']); ?></b>
-
-            <div class="booking-info">Rooms: <?= $row['rooms_booked']; ?></div>
-            <div class="booking-info">Check-in: <?= $check_in; ?></div>
-            <div class="booking-info">Check-out: <?= $check_out; ?></div>
-
-            <div class="booking-info">Status: 
-                <span class="status-<?= $row['status']; ?>">
-                    <?= $row['status']; ?>
-                </span>
-            </div>
-
-            <?php if ($row['status'] == "booked"): ?>
-                <div class="action-group">
-
-                    <form method="POST" action="cancel_request.php">
-                        <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
-                        <button type="submit" class="btn-cancel">Request Cancel</button>
-                    </form>
-
-                    <form method="GET" action="invoice.php">
-                        <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
-                        <button type="submit" class="btn-invoice">View Invoice</button>
-                    </form>
-
-                </div>
-
-            <?php elseif ($row['status'] == "cancel_requested"): ?>
-                <i style="color:#e67e22;">Cancellation pending approval...</i>
-
-            <?php elseif ($row['status'] == "canceled"): ?>
-                <i style="color:#c0392b;">Booking canceled</i>
-            <?php endif; ?>
+    <div class="wrapper">
+        <div class="mybookingh2">
+            <h2>My Bookings</h2>
         </div>
 
-        <?php endwhile; ?>
+        <?php if (mysqli_num_rows($result) > 0): ?>
+            <div class="booking-card-container">
+                <?php while ($row = mysqli_fetch_assoc($result)): 
+                    $check_in = date("d M Y", strtotime($row['check_in']));
+                    $check_out = date("d M Y", strtotime($row['check_out']));
+                ?>
+                    <div class="booking-card">
+                        <b><?= htmlspecialchars($row['hotel_name']); ?></b>
 
-    <?php else: ?>
-        <p class="no-bookings">
-            You have no bookings yet. Start by 
-            <a href="../index.php">booking a hotel</a>!
-        </p>
-    <?php endif; ?>
-</div>
+                        <div class="booking-info">Rooms: <?= $row['rooms_booked']; ?></div>
+                        <div class="booking-info">Check-in: <?= $check_in; ?></div>
+                        <div class="booking-info">Check-out: <?= $check_out; ?></div>
 
-<?php include '../includes/footer.php'; ?>
+                        <div class="booking-info">Status: 
+                            <span class="status-<?= $row['status']; ?>">
+                                <?= $row['status']; ?>
+                            </span>
+                        </div>
+
+
+                        <?php if ($row['status'] == "booked"): ?>
+                            <div class="action-group">
+
+                                <form method="POST" action="cancel_request.php">
+                                    <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
+                                    <button type="submit" class="btn-cancel">Request Cancel</button>
+                                </form>
+
+                                <form method="GET" action="invoice.php">
+                                    <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
+                                    <button type="submit" class="btn-invoice">View Invoice</button>
+                                </form>
+
+                            </div>
+
+                        <?php elseif ($row['status'] == "cancel_requested"): ?>
+                            <i style="color:#e67e22;">Cancellation pending approval...</i>
+
+                        <?php elseif ($row['status'] == "canceled"): ?>
+                            <i style="color:#c0392b;">Booking canceled</i>
+                        <?php endif; ?>
+                    </div>
+                    
+            <?php endwhile; ?>
+            </div>
+
+        <?php else: ?>
+            <p class="no-bookings">
+                You have no bookings yet. Start by 
+                <a href="../index.php">booking a hotel</a>!
+            </p>
+        <?php endif; ?>
+    </div>
+    <?php include '../includes/footer.php'; ?>
 
 </body>
 </html>

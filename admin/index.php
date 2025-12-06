@@ -1,18 +1,20 @@
 <?php
 session_start();
-// include '../includes/navbar.php';
+include '../includes/navbar.php';
 include '../includes/connection.php';
-// include '../includes/functions.php';
+include '../includes/functions.php';
 
 // Only admin can access
-// if (!isset($_SESSION['user_id']) || $_SESSION['level'] != 1) {
-//     header("Location: login.php");
-//     exit();
-// }
+if (!isset($_SESSION['user_id']) || $_SESSION['level'] != "admin") {
+    header("Location: login.php");
+    exit();
+}
 
 // Fetch all hotels
-$query = "SELECT * FROM users where(level ='admin'||level = 'hoteladmin')";
+$query = "SELECT * FROM users 
+JOIN hotels ON users.user_id = hotels.hotel_admin_id";
 $result = mysqli_query($con, $query);
+
 
 ?>
 <!DOCTYPE html>
@@ -31,9 +33,9 @@ $result = mysqli_query($con, $query);
 <div class="container">
     <h2>Admin Dashboard</h2>
 
-    <?php if ($msg != ""): ?>
-        <div class="msg <?php echo $msgType; ?>"><?php echo $msg; ?></div>
-    <?php endif; ?>
+        <?php if ($msg != ""): ?>
+            <div class="msg <?php echo $msgType; ?>"><?php echo $msg; ?></div>
+        <?php endif; ?>
 
     <a href="addnewuser.php" class="add-btn">+ Add New User</a>
 
@@ -42,6 +44,7 @@ $result = mysqli_query($con, $query);
             <tr>
                 <th>ID</th>
                 <th>User Name</th>
+                <th>Hotel Name</th>
                 <th>Email</th>
                 <th>Roll</th>
                 <th>Action</th>
@@ -53,6 +56,7 @@ $result = mysqli_query($con, $query);
                 <tr>
                     <td><?php echo $row['user_id']; ?></td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['hotel_name']); ?></td>
                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                     <td><?php echo $row['level']; ?></td>
 

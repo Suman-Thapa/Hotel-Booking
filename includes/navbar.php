@@ -9,7 +9,7 @@ $user_id = $_SESSION['user_id'] ?? null;
 
 if ($user_id) {
     $user = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM users WHERE user_id='$user_id'"));
-    $level = (int)$user['level'];
+    $level = $user['level'];
 }
 ?>
 
@@ -17,15 +17,16 @@ if ($user_id) {
 
 <nav class="navbar">
     <div class="nav-left">
-        <a class="logo" href="<?php echo ($level === 1) ? $base_url.'hotel-admin/admin_dashboard.php' : $base_url.'index.php'; ?>">
+        <a class="logo" href="<?php echo ($level === 'hoteladmin') ? $base_url.'hotel-admin/admin_dashboard.php' :(($level == 'admin')?$base_url.'admin/index.php': $base_url.'index.php'); ?>">
             HotelBooking
         </a>
 
-        <?php if ($user_id && $level==0): ?>
+        <?php if ($user_id && $level=='user'): ?>
             <a href="<?php echo $base_url; ?>user/my_bookings.php">My Bookings</a>
         <?php endif; ?>
 
-        <?php if ($user_id && $level==1): ?>
+        <?php if ($user_id && $level=='hoteladmin'): ?>
+            <a href="<?php echo $base_url; ?>hotel-admin/view_hotel.php">Your Hotel</a>
             <a href="<?php echo $base_url; ?>hotel-admin/admin_invoices.php">Invoices</a>
             <a href="<?php echo $base_url; ?>hotel-admin/admin_pending_cancellations.php">Cancellations</a>
         <?php endif; ?>
@@ -54,6 +55,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+    
     width: 100%;
     z-index: 999;
     width: 100vw;                 /* full width */
@@ -82,10 +84,10 @@ body {
 }
 
 /* Align logout button nicely on the far right */
-.nav-right {
+.nav-right, .nav-left {
     display: flex;
     align-items: center;
-    gap: 12px; /* space between links */
+    gap: 15px; /* space between links */
 }
 
 .nav-right a:last-child {
@@ -94,6 +96,7 @@ body {
 
 .navbar a:hover {
     opacity: 0.8;
+    text-decoration: underline
 }
 
 /* BUTTONS */
