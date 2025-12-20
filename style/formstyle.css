@@ -7,50 +7,59 @@
 
     }
 
-    /* Center login box */
-    .login-container,.register-container,
-    .add-room-container,
-    .edit-hotel-container,
-    .add-user-container,
-    .edit-user-container,
-    .add-hotel-container{
-        width: 100%;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .login-form,
-    .register-form
+
+    .container
     {
         width: 100%;
+        min-height: calc(100vh - 70px);
+        margin-top: 70px;
         display: flex;
-        flex-direction: column;
-        gap: 30px;
+        justify-content: center;
+        align-items: center;   
+        padding-top:40px ;     
     }
 
-    .login-box,.register-box,
-    .addhotel,.addroom,
-    .edithotel,
-    .edituser,
-    .adduser,
-    .profile-card{
+    
+    .form-box
+    {
         background: white;
         padding: 30px 40px;
         border-radius: 10px;
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-        width: 350px;
+        width: 400px;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
     }
 
-    .login-box h2,.register-box h2 {
-        margin-bottom: 25px;
+    .edit-form-box{
+        background: white;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        width: 400px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+
+    }
+
+    .form-box h2 {
+        margin: 0;
+        margin-top: 12px;
         color: #0071c2; /* Matching blue */
         font-size: 24px;
     }
 
+    .formimg{
+        width: 90px;
+
+    }
+
     
-    input,select,textarea
+    input,select
 
     {
          box-sizing: border-box;
@@ -63,11 +72,58 @@
         transition: 0.3s;
     }
 
+    textarea{
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 150px;
+        padding: 12px 14px;
+        line-height: 1.5;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.3s;
+        resize: vertical;
+    }
 
-    .login-box input:focus,
-    .register-box input:focus {
+     input:focus {
         border-color: #0071c2; /* Matching blue */
-        box-shadow: 0 0 4px rgba(0, 113, 194, 0.5);
+        
+    }
+
+    .password-icon{
+        display: flex;
+        gap:10px;
+        align-items: center;
+        padding: 12px 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: 0.3s;
+    }
+
+    .password-icon:focus-within{
+         border-color: #0071c2;
+        
+    }
+    .password-icon input{
+        border: none;
+        padding: 0;
+
+    }
+    .password-icon img{
+        height: 15px;
+        width: 15px;
+        cursor: pointer;
+        
+    }
+
+    .email_error,.password_error,.phone_validate_error{
+        margin: 0;
+        color: red;
+        text-align: left;
+        margin-left: 12px;
+        margin-top: 5px;
     }
 
      button{
@@ -103,6 +159,8 @@
         font-size: 14px;
         margin-top: 10px;
         font-weight: bold;
+       
+       
     }
 
     .success  {

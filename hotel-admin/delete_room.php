@@ -16,12 +16,12 @@ if (isset($_GET['id'])) {
     try {
         mysqli_begin_transaction($con);
 
-        $deleteQuery = "DELETE FROM hotel_room WHERE room_id='$id'";
+        $deleteQuery = "DELETE FROM hotel_rooms WHERE room_id='$id'";
         mysqli_query($con, $deleteQuery);
 
         mysqli_commit($con);
 
-        $_SESSION['hotel_msg'] = [
+        $_SESSION['room_msg'] = [
             "text" => "Room deleted successfully!",
             "type" => "success"
         ];
@@ -30,7 +30,7 @@ if (isset($_GET['id'])) {
     mysqli_rollback($con);
 
     // Friendly message for the user
-    $_SESSION['hotel_msg'] = [
+    $_SESSION['room_msg'] = [
         "text" => "Cannot delete Room! It has bookings linked to it.",
         "type" => "error"
     ];

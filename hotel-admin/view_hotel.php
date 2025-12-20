@@ -17,12 +17,7 @@ $result = mysqli_query($con, $query);
 $hotel = mysqli_fetch_assoc($result);
 
 // Success message from add/edit pages
-$msg = "";
-if (isset($_SESSION['hotel_msg'])) {
-    $msg = $_SESSION['hotel_msg']['text'];
-    $msgType = $_SESSION['hotel_msg']['type'];
-    unset($_SESSION['hotel_msg']);
-}
+
 ?>
 
 <!DOCTYPE html>

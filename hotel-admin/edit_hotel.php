@@ -12,9 +12,8 @@ if ($_SESSION['level'] != 'hoteladmin') {
 $id = $_GET['id'] ?? 0;
 
 // Fetch hotel and its room info
-$result = mysqli_query($con, "SELECT h.hotel_id, h.hotel_name, h.location, h.about, h.hotel_image, hr.room_id, hr.total_rooms, hr.available_rooms 
+$result = mysqli_query($con, "SELECT h.hotel_id, h.hotel_name, h.location,h.hotel_address_link, h.about, h.hotel_image 
                               FROM hotels h 
-                              JOIN hotel_room hr ON h.hotel_id = hr.hotel_id
                               WHERE h.hotel_id = $id
                               LIMIT 1");
 $hotel = mysqli_fetch_assoc($result);
@@ -27,9 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $hotel_name = sanitize($con, $_POST['hotel_name']);
     $location   = sanitize($con, $_POST['location']);
+    $locationlink   = sanitize($con, $_POST['locationlink']);
     $about      = sanitize($con, $_POST['description']);
-    $totalroom  = (int)$_POST['total_rooms'];
-    $availableroom = (int)$_POST['available_rooms'];
+    
+    
 
     $image_sql = "";
     if (isset($_FILES['hotel_image']) && $_FILES['hotel_image']['error'] == 0) {
@@ -45,16 +45,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Update hotels table
     $updatehotel = "UPDATE hotels SET 
-                        hotel_name='$hotel_name',
-                        about='$about',
-                        location='$location' $image_sql
+                    hotel_name='$hotel_name',
+                    about='$about',
+                    location='$location',hotel_address_link='$locationlink' $image_sql
                     WHERE hotel_id=$id";
     mysqli_query($con, $updatehotel) or die("Hotel Update Failed: " . mysqli_error($con));
 
-    // Update hotel_room table
-    $roomid = $hotel['room_id'];
-    $updateroom = "UPDATE hotel_room SET total_rooms=$totalroom, available_rooms=$availableroom WHERE room_id=$roomid";
-    mysqli_query($con, $updateroom) or die("Room Update Failed: " . mysqli_error($con));
+
 
     header("Location: view_hotel.php");
     exit();
@@ -71,38 +68,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 </head>
 <body>
+    <div class="container">
 
-<div class="edit-hotel-container">
-    <h2>Edit Hotel</h2>
-    <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data">
+                <div class="edit-form-box">
+                        <h2>Edit Hotel</h2>
+                    
+                        <div>
+                            <label>Hotel Name:</label>
+                            <input type="text" name="hotel_name" value="<?= htmlspecialchars($hotel['hotel_name']); ?>" required>
+                        </div>
 
-        <label>Hotel Name:</label>
-        <input type="text" name="hotel_name" value="<?= htmlspecialchars($hotel['hotel_name']); ?>" required>
+                        <div>
+                            <label>Location:</label>
+                            <input type="text" name="location" value="<?= htmlspecialchars($hotel['location']); ?>" required>
+                        </div>
 
-        <label>Location:</label>
-        <input type="text" name="location" value="<?= htmlspecialchars($hotel['location']); ?>" required>
+                        <div>
+                            <label>Google Location(Link):</label>
+                            <input type="text" name="locationlink" value="<?= htmlspecialchars($hotel['hotel_address_link']); ?>" placeholder="Example:https://maps.app.goo.gl/k8sUYoiwZ2k9ouGt9">
+                        </div>
 
-        <label>Total Rooms:</label>
-        <input type="number" name="total_rooms" value="<?= htmlspecialchars($hotel['total_rooms']); ?>" min="1" required>
+                        <div>
+                            <label>Hotel Image:</label>
+                            <?php if (!empty($hotel['hotel_image']) && file_exists("../uploads/hotels/".$hotel['hotel_image'])): ?>
+                                <img src="../uploads/hotels/<?= $hotel['hotel_image'] ?>" alt="Hotel Image" class="formimg">
+                            <?php else: ?>
+                                <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image">
+                            <?php endif; ?>
+                            <input type="file" name="hotel_image" accept="image/*">
+                        </div>
 
-        <label>Available Rooms:</label>
-        <input type="number" name="available_rooms" value="<?= htmlspecialchars($hotel['available_rooms']); ?>" min="0" required>
+                        <div>
+                            <label>About Hotel:</label>
+                            <textarea name="description" rows="5"><?= htmlspecialchars($hotel['about']); ?></textarea>
 
-        <label>Hotel Image:</label>
-        <?php if (!empty($hotel['hotel_image']) && file_exists("../uploads/hotels/".$hotel['hotel_image'])): ?>
-            <img src="../uploads/hotels/<?= $hotel['hotel_image'] ?>" alt="Hotel Image">
-        <?php else: ?>
-            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image">
-        <?php endif; ?>
-        <input type="file" name="hotel_image" accept="image/*">
+                        </div>
 
-        <label>About Hotel:</label>
-        <textarea name="description" rows="5"><?= htmlspecialchars($hotel['about']); ?></textarea>
+                        <button type="submit">Update Hotel</button>
 
-        <button type="submit">Update Hotel</button>
-
-    </form>
+                    </div>
+                </form>
 </div>
+
 
 </body>
 </html>

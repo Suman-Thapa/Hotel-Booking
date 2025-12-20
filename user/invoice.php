@@ -12,34 +12,29 @@ if (!$user_id) {
     die("You must <a href='../login/login.php'>login</a> to view the invoice.");
 }
 
-// Get booking ID
+// Get booking ID from GET
 $booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
 if ($booking_id < 1) {
     die("Invalid Booking ID.");
 }
 
-/*
-    FIXED JOIN:
-    Previously: you joined hotel_room ON hotel_id, which returned WRONG room.
-    NOW: hotel_room is joined using room_id from booking.
-*/
-
+// Query invoice details
 $query = "
     SELECT 
         b.*, 
         u.name, u.email,
         h.hotel_name, h.location, h.hotel_image,
-        hr.room_number, hr.room_type, hr.price_per_room, 
+        hr.room_number, hr.room_type, hr.room_price, 
         hr.about_rooms, hr.room_image,
         p.payment_status, p.amount
-    FROM bookings b
-    JOIN users u ON b.user_id = u.user_id
-    JOIN hotels h ON b.hotel_id = h.hotel_id
-    JOIN hotel_room hr ON b.room_id = hr.room_id   -- FIXED JOIN
-    JOIN payments p ON b.booking_id = p.booking_id
-    WHERE b.booking_id = $booking_id
-      AND b.user_id = $user_id       -- Prevent viewing another user's invoice
-    LIMIT 1
+        FROM bookings b
+        JOIN users u ON b.user_id = u.user_id
+        JOIN hotels h ON b.hotel_id = h.hotel_id
+        JOIN hotel_rooms hr ON b.room_id = hr.room_id
+        LEFT JOIN payments p ON b.booking_id = p.booking_id
+        WHERE b.booking_id = $booking_id
+        AND b.user_id = $user_id
+        LIMIT 1
 ";
 
 $result = mysqli_query($con, $query);
@@ -58,15 +53,17 @@ $check_out = new DateTime($row['check_out']);
 $nights = max(1, $check_in->diff($check_out)->days);
 
 // Total price
-$total_price = $row['rooms_booked'] * $row['price_per_room'] * $nights;
+$total_price = $row['rooms_booked'] * $row['room_price'] * $nights;
 
-// Room image
+// Room image with fallback
 $imagePath = "../uploads/rooms/" . $row['room_image'];
 if (!file_exists($imagePath) || empty($row['room_image'])) {
-    $imagePath = "https://via.placeholder.com/400x300?text=No+Image";
+    $imagePath = "https://via.placeholder.com/450x350?text=No+Image";
 }
 
-$epay_url = "../payment/payment_esewa.php";
+// Payment URLs
+$esewa_url = "../payment/payment_esewa.php";
+$khalti_url = "../payment/payment_khalti.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,6 +77,7 @@ $epay_url = "../payment/payment_esewa.php";
 
 <div class="invoice-container">
 
+    <!-- Left Side -->
     <div class="invoice-left">
         <h2>Hotel Booking Invoice</h2>
         <hr>
@@ -100,7 +98,7 @@ $epay_url = "../payment/payment_esewa.php";
             <b>Room No:</b> <?= htmlspecialchars($row['room_number']); ?><br>
             <b>Room Type:</b> <?= htmlspecialchars($row['room_type']); ?><br>
             <b>Room Info:</b> <?= htmlspecialchars($row['about_rooms']); ?><br>
-            <b>Price per Room:</b> Rs. <?= number_format($row['price_per_room'], 2); ?>
+            <b>Price per Room:</b> Rs. <?= number_format($row['room_price'], 2); ?>
         </p>
 
         <h3>Booking Details</h3>
@@ -109,20 +107,24 @@ $epay_url = "../payment/payment_esewa.php";
             <b>Check-out:</b> <?= $row['check_out']; ?><br>
             <b>Nights:</b> <?= $nights; ?><br>
             <b>Rooms Booked:</b> <?= $row['rooms_booked']; ?><br>
-            <b>Total Price:</b> Rs. <?= number_format($total_price, 2); ?><br>
+            <b>Total Price:</b> <b style="color:green;">Rs. <?= number_format($total_price, 2); ?></b><br>
+
             <b>Payment Status:</b>
-            <span style="color:<?= $row['payment_status']=='paid'?'green':'red'; ?>;">
-                <?= ucfirst($row['payment_status']); ?>
+            <span style="color:<?= ($row['payment_status'] == 'paid' ? 'green' : 'red'); ?>;">
+                <?= ucfirst($row['payment_status'] ?? 'unpaid'); ?>
             </span>
         </p>
 
-        <?php if ($row['payment_status'] != 'paid'): ?>
+        <!-- Only show payment buttons if not already paid -->
+        <?php if (($row['payment_status'] ?? 'unpaid') != 'paid'): ?>
         <div class="payment-buttons">
-            <a href="../payment/payment_khalti.php?booking_id=<?= $booking_id ?>&amount=<?= $total_price ?>&name=<?= urlencode($row['name']) ?>&email=<?= urlencode($row['email']) ?>">
+            <!-- Khalti -->
+            <a href="<?= $khalti_url ?>?booking_id=<?= $booking_id ?>&amount=<?= $total_price ?>&name=<?= urlencode($row['name']) ?>&email=<?= urlencode($row['email']) ?>">
                 <button class="btn-pay khalti">Pay With Khalti</button>
             </a>
 
-            <form action="<?= $epay_url ?>" method="POST">
+            <!-- eSewa -->
+            <form action="<?= $esewa_url ?>" method="POST">
                 <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
                 <input type="hidden" name="total_amount" value="<?= $total_price; ?>">
                 <button class="btn-pay esewa" type="submit">Pay with eSewa</button>
@@ -131,6 +133,7 @@ $epay_url = "../payment/payment_esewa.php";
         <?php endif; ?>
     </div>
 
+    <!-- Right Side -->
     <div class="invoice-right">
         <img src="<?= $imagePath; ?>" alt="Room Image">
     </div>

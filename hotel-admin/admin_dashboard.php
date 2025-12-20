@@ -13,20 +13,20 @@ $hotel_admin_id = $_SESSION['user_id'];
 
 // Fetch rooms with hotel info
 $query = "SELECT hr.*, h.hotel_name, h.location 
-          FROM hotel_room hr
+          FROM hotel_rooms hr
           JOIN hotels h ON hr.hotel_id = h.hotel_id
           WHERE h.hotel_admin_id = $hotel_admin_id
           ORDER BY h.hotel_name, hr.room_number";
 
 $result = mysqli_query($con, $query);
-
-// Show session messages
 $msg = "";
-if (isset($_SESSION['hotel_msg'])) {
-    $msg = $_SESSION['hotel_msg']['text'];
-    $msgType = $_SESSION['hotel_msg']['type'];
-    unset($_SESSION['hotel_msg']);
+if (isset($_SESSION['room_msg'])) {
+    $msg = $_SESSION['room_msg']['text'];
+    $msgType = $_SESSION['room_msg']['type'];
+    unset($_SESSION['room_msg']);
 }
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -53,8 +53,6 @@ if (isset($_SESSION['hotel_msg'])) {
                 <th>Room No.</th>
                 <th>Type</th>
                 <th>Price (₹)</th>
-                <th>Total Rooms</th>
-                <th>Available</th>
                 <th>Room Image</th>
                 <th>Action</th>
             </tr>
@@ -67,9 +65,7 @@ if (isset($_SESSION['hotel_msg'])) {
                     <td><?= htmlspecialchars($row['hotel_name']) ?></td>
                     <td><?= htmlspecialchars($row['room_number']) ?></td>
                     <td><?= htmlspecialchars($row['room_type']) ?></td>
-                    <td>₹<?= $row['price_per_room'] ?></td>
-                    <td><?= $row['total_rooms'] ?></td>
-                    <td><?= $row['available_rooms'] ?></td>
+                    <td>₹<?= $row['room_price'] ?></td>
 
                     <td>
                         <?php

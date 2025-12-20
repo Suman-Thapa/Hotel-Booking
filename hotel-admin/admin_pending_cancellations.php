@@ -1,26 +1,30 @@
 <?php
-session_start();
-include '../includes/connection.php';
-include '../includes/navbar.php';
+    session_start();
+    include '../includes/connection.php';
+    include '../includes/navbar.php';
 
-if ($_SESSION['level'] != 'hoteladmin') {
-    header("Location: ../login/login.php");
-    exit();
-}
+    if ($_SESSION['level'] != 'hoteladmin') {
+        header("Location: ../login/login.php");
+        exit();
+    }
 
-// Fetch pending cancellation requests
-$query = "
-    SELECT 
-        b.booking_id, b.user_id, b.hotel_id, b.rooms_booked, b.check_in, b.check_out, b.status, 
-        h.hotel_name, u.name,
-        hr.room_number, hr.price_per_room AS room_price, hr.room_image
-    FROM bookings b
-    JOIN hotels h ON b.hotel_id = h.hotel_id
-    JOIN users u ON b.user_id = u.user_id
-    JOIN hotel_room hr ON b.room_id = hr.room_id
-    WHERE b.status='cancel_requested'
-    ORDER BY b.booking_id DESC
-";
+    $admin_id = $_SESSION['user_id'];
+
+    $query = "
+        SELECT 
+            b.booking_id, b.user_id, b.hotel_id, b.rooms_booked, 
+            b.check_in, b.check_out, b.status, 
+            h.hotel_name, u.name,
+            hr.room_number, hr.room_price, hr.room_image
+        FROM bookings b
+        JOIN hotels h ON b.hotel_id = h.hotel_id
+        JOIN users u ON b.user_id = u.user_id
+        JOIN hotel_rooms hr ON b.room_id = hr.room_id
+        WHERE b.status = 'cancel_requested'
+        AND h.hotel_admin_id = $admin_id
+        ORDER BY b.booking_id DESC
+    ";
+
 
 $result = mysqli_query($con, $query);
 ?>
@@ -48,7 +52,7 @@ $result = mysqli_query($con, $query);
                 <b>Rooms Booked:</b> <?= $row['rooms_booked']; ?><br>
                 <b>Check-in:</b> <?= $row['check_in']; ?><br>
                 <b>Check-out:</b> <?= $row['check_out']; ?><br>
-                <b>Status:</b> <?= ucfirst($row['status']); ?><br>
+                <b>Status:</b> <?= $row['status']; ?><br>
 
                 <form method="POST" action="approve_cancel.php">
                     <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">

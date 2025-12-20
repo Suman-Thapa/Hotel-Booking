@@ -5,11 +5,14 @@ include '../includes/connection.php';
 
 $msg = "";
 $email_value = ""; // To preserve email input on error
+$email_error = "";
+$password_error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email    = sanitize($con, $_POST['email']);
     $password = sanitize($con, $_POST['password']);
-    $email_value = htmlspecialchars($email); // Keep email in input
+    $_SESSION['email'] = $email;
+    $_SESSION['password'] = $password;
 
     $query = "SELECT * FROM users WHERE email='$email' LIMIT 1";
     $result = mysqli_query($con, $query);
@@ -21,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_id'] = $row['user_id'];
             $_SESSION['level']   = $row['level'];
             $_SESSION['name']   = $row['name'];
+            $_SESSION['email'] = $row['email'];
             
 
             if ($row['level'] == 'hoteladmin') {
@@ -34,10 +38,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             exit();
         } else {
-            $msg = "Invalid email or password!";
+            $password_error = "Invalid  password!";
         }
     } else {
-        $msg = "Invalid email or password!";
+        $email_error = "Invalid Email";
     }
 }
 ?>
@@ -56,24 +60,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
 
-<div class="login-container">
-    <div class="login-box">
-        
-        <h2>Login</h2>
-        
-        <form method="POST" class="login-form">
-            <input type="text" name="email" placeholder="Email">
-            <input type="password" name="password" placeholder="Password" required>
+<div class="container">
+    
+    
+    <form method="POST" class="login-form">
+        <div class="form-box">
+             <h2>Login</h2>
+             <div>
+                 <input type="email" name="email" placeholder="Email" value="<?= $_SESSION['email'] ?>" required>
+                 <p class="email_error"><?= $email_error ?></p>
+             </div>
+            
+             <div>
+                 <div class="password-icon">
+                     <input type="password" name="password" placeholder="Password" required class="password_input" value="<?= $_SESSION['password'] ?>">
+                     <img src="../uploads/login_icon/hide.png" alt="Hide Image" class="hide_icon">
+                 </div>
+                 <p class="password_error"><?= $password_error ?></p>
+             </div>
+
             <button type="submit" name="submit">Login</button>
         </form>
-
-        <?php if($msg != ""): ?>
-            <div class="msg"><?php echo $msg; ?></div>
-        <?php endif; ?>
-
-        <p>Don't have an account? <a href="register.php">Register here</a></p>
+        <div>
+            <p>Don't have an account? <a href="register.php">Register here</a></p>
+            <p> <a href="forget_password.php">Forget Password?</a></p>
+        </div>
     </div>
 </div>
 
 </body>
 </html>
+
+<script src="../script/form_icon.js"></script>
+

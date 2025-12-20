@@ -23,11 +23,9 @@ if (isset($_POST['booking_id'])) {
             $rooms_booked = $booking['rooms_booked'];
 
             // Update booking status to canceled
-            mysqli_query($con, "UPDATE bookings SET status='canceled' WHERE booking_id='$booking_id'");
+            mysqli_query($con, "UPDATE bookings SET status='cancelled' WHERE booking_id='$booking_id'");
 
-            // Add rooms back to hotel_room availability
-            mysqli_query($con, "UPDATE hotel_room SET available_rooms = available_rooms + $rooms_booked WHERE room_id='$room_id'");
-
+           
 
             header('Location: admin_pending_cancellations.php');
             exit();

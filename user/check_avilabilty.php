@@ -1,126 +1,160 @@
 <?php
 session_start();
-include '../includes/navbar.php';
 include '../includes/connection.php';
 include '../includes/functions.php';
-
 check_login();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/login.php");
+// Get POST data
+$room_id   = (int)$_POST['room_id'] ?? 0;
+$check_in  = $_POST['check_in'] ?? '';
+$check_out = $_POST['check_out'] ?? '';
+$rootype = $_POST['room_type'] ?? '';
+
+$_SESSION['old_check_in'] = $check_in;
+$_SESSION['old_check_out'] = $check_out;
+$_SESSION['old_room_type'] = $rootype;
+
+
+// Fetch room details
+$roomQuery = mysqli_query($con, "
+    SELECT hr.*, h.hotel_name, h.location, h.hotel_image
+    FROM hotel_rooms hr
+    JOIN hotels h ON hr.hotel_id = h.hotel_id
+    WHERE hr.room_id = $room_id
+");
+
+if (!$roomQuery || mysqli_num_rows($roomQuery) == 0) {
+    $_SESSION['error'] = "Room not Available for Selected Date ";
+    header("Location: ../index.php");
     exit;
 }
 
-// Allow ONLY POST
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    die("❌ Invalid Access (POST only).");
-}
+$room = mysqli_fetch_assoc($roomQuery);
 
-// Get POST values
-$room_id  = (int)$_POST['room_id'];
-$check_in  = sanitize($con, $_POST['check_in']);
-$check_out = sanitize($con, $_POST['check_out']);
-$rooms     = (int)$_POST['rooms'];
-
-
-if (!$room_id || !$check_in || !$check_out || !$rooms) {
-    die("❌ Missing required data.");
-}
-
-
-$query = "
-    SELECT hr.*, h.hotel_name, h.location, h.hotel_image
-    FROM hotel_room hr
-    JOIN hotels h ON hr.hotel_id = h.hotel_id
-    WHERE hr.room_id = $room_id
-      AND hr.available_rooms >= $rooms
+// Check if room is already booked for the selected dates
+$overlap = mysqli_query($con, "
+    SELECT 1 FROM bookings 
+    WHERE room_id = $room_id 
+      AND status='booked'
+      AND check_in < '$check_out'
+      AND check_out > '$check_in'
     LIMIT 1
-";
+");
 
-$res = mysqli_query($con, $query);
-
-if (!$res) {
-    die("❌ SQL ERROR: " . mysqli_error($con));
+if (mysqli_num_rows($overlap) > 0) {
+    $_SESSION['error_msg'] = "<div class='custom-alert'><p>Room is not available for selected date.</p><br><h2> Please choose another Room Category.</h2>'";
+    $_SESSION['date_error_msg'] = "Room is already booked for the selected dates.<b> <h2>Please Select the Room for Another  Date and Try </h2></b>";
+    
+    header("Location: ../index.php");
+    exit;
 }
 
-if (mysqli_num_rows($res) == 0) {
-    die("❌ Room not found OR not enough available rooms.");
-}
+// Calculate nights and total price
+$nights = (new DateTime($check_in))->diff(new DateTime($check_out))->days;
+$total_price = $room['room_price'] * $nights;
 
-$room = mysqli_fetch_assoc($res);
-
-// Extract hotel_id from DB
-$hotel_id = $room['hotel_id'];
-
-// Image fix
-$image = "../uploads/rooms/" . $room['room_image'];
-if (!file_exists($image) || empty($room['room_image'])) {
-    $image = "https://via.placeholder.com/260x180?text=No+Image";
-}
-
-// Days difference
-$days = (strtotime($check_out) - strtotime($check_in)) / 86400;
-if ($days < 1) $days = 1;
-
-$total_price = $room['price_per_room'] * $rooms * $days;
-
+// Store booking data in session for confirm_booking.php
+$_SESSION['booking_data'] = [
+    'room_id'    => $room_id,
+    'hotel_id'   => $room['hotel_id'],
+    'check_in'   => $check_in,
+    'check_out'  => $check_out,
+    'nights'     => $nights,
+    'total_price'=> $total_price
+];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check Availability</title>
-<link rel="stylesheet" href="../style/userindexstyle.css">
+<title>Room Availability</title>
+<style>
+.wrapper {
+    max-width: 900px;
+    margin: 90px auto 20px auto; /* push below navbar */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background: #fff;
+}
+.room-header { 
+    text-align: center; 
+    margin-bottom: 20px; }
+.room-header h2 { 
+    margin: 0; 
+    font-size: 1.8rem; 
+}
+.room-info { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 20px; 
+}
+.room-image { 
+    flex: 1 1 300px; 
+}
+.room-image img { 
+    width: 100%; 
+    height: 220px; 
+    object-fit: cover; 
+    border-radius: 8px; 
+}
+.room-details { 
+    flex: 1 1 300px; 
+}
+.room-details p { 
+    margin: 8px 0; 
+    font-size: 1rem; 
+}
+.room-details .price { 
+    font-size: 1.2rem; font-weight: bold; color: #27ae60; }
+.book-now-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+}
+.book-now-btn:hover { background: #219150; }
+</style>
 </head>
 <body>
 
-<div class="booking-container">
-
-    <!-- LEFT SIDE -->
-    <div class="left-side">
-        <img src="<?= $image ?>" class="hotel-img">
-
-        <div class="hotel-details">
-            <h2><?= htmlspecialchars($room['hotel_name']) ?></h2>
-            <p class="loc"><?= htmlspecialchars($room['location']) ?></p>
-
-            <div class="info">
-                <b>Rooms:</b> <?= $rooms ?><br>
-                <b>Nights:</b> <?= $days ?><br>
-                <b>Price / Room:</b> NPR <?= number_format($room['price_per_room']) ?>
-                <h2>About</h2>
-                <p><?= htmlspecialchars($room['about_rooms']) ?></p>
-            </div>
-        </div>
+<div class="wrapper">
+    <div class="room-header">
+        <h2><?= htmlspecialchars($room['hotel_name']) ?> - <?= htmlspecialchars($room['room_type']) ?></h2>
+        <p><?= htmlspecialchars($room['location']) ?></p>
     </div>
 
-    <!-- RIGHT SIDE -->
-    <div class="right-side">
-        <div class="summary-box">
-            <h3>Total Price</h3>
-            <p class="price">NPR <?= number_format($total_price) ?></p>
+    <div class="room-info">
+        <div class="room-image">
+            <?php 
+            $image = !empty($room['room_image']) 
+                        ? "../uploads/rooms/" . $room['room_image'] 
+                        : "https://via.placeholder.com/450x300?text=No+Image"; 
+            ?>
+            <img src="<?= $image ?>" alt="<?= htmlspecialchars($room['room_type']) ?>">
+        </div>
 
-            <div class="date-box">
-                <p><b>Check-in:</b> <?= $check_in ?></p>
-                <p><b>Check-out:</b> <?= $check_out ?></p>
-            </div>
+        <div class="room-details">
+            <p><b>Room Type:</b> <?= htmlspecialchars($room['room_type']) ?></p>
+            <p><b>Price per Night:</b> NPR <?= number_format($room['room_price'], 2) ?></p>
+            <p><b>Check-in:</b> <?= $check_in ?></p>
+            <p><b>Check-out:</b> <?= $check_out ?></p>
+            <p><b>Nights:</b> <?= $nights ?></p>
+            <p class="price"><b>Total Price:</b> NPR <?= number_format($total_price, 2) ?></p>
 
-            <form method="POST" action="book_process.php">
-                <input type="hidden" name="hotel_id" value="<?= $hotel_id ?>">
-                <input type="hidden" name="room_id" value="<?= $room_id ?>">
-                <input type="hidden" name="check_in" value="<?= $check_in ?>">
-                <input type="hidden" name="check_out" value="<?= $check_out ?>">
-                <input type="hidden" name="rooms" value="<?= $rooms ?>">
-
-                <button class="book-btn"
-                    onclick="return confirm('Please confirm your booking before proceeding.')">
-                    Proceed To Book
-                </button>
-            </form>
+            <a href="confirm_booking.php" class="book-now-btn">Book Now</a>
         </div>
     </div>
-
 </div>
+
 </body>
 </html>

@@ -80,3 +80,22 @@ CREATE TABLE IF NOT EXISTS payments (
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+
+CREATE TABLE room_calendar (
+    calendar_id INT AUTO_INCREMENT PRIMARY KEY,
+    room_id INT NOT NULL,
+    date DATE NOT NULL,
+    status ENUM('available','booked','maintenance') DEFAULT 'available',
+    booking_id INT DEFAULT NULL,
+
+    UNIQUE (room_id, date),  -- ⬅ Prevents double-booking on same day
+
+    FOREIGN KEY (room_id) REFERENCES hotel_rooms(room_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+        ON DELETE SET NULL
+);
