@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div>
                     <label>Room Image </label>
-                    <input type="file" name="room_image" accept=".jpg,.jpeg,.png,.webp,.avif" required>
+                    <input type="file" name="room_image" accept=".jpg,.jpeg,.png" required>
                 </div>
 
                     <button type="submit">Add Room</button>

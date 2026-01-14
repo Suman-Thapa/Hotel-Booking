@@ -73,7 +73,7 @@ if (isset($_POST['submit'])) {
 
                 <div>
                     <label>Hotel Image:</label>
-                    <input type="file" name="hotel_image" accept="image/*">
+                    <input type="file" name="hotel_image" accept=".jpg,.jpeg,.png" >
                 </div>
 
                 <div>

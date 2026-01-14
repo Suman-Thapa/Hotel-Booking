@@ -1,5 +1,5 @@
 <?php
-require 'send_main_function.php';
+// require 'send_main_function.php';
 
 $email = "sumanthapa302702@gmail.com";
 $subject = "Booking Confirmation";

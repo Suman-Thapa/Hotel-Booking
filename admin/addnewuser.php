@@ -91,7 +91,7 @@ if (isset($_POST['submit'])) {
 
                 <div>
                     <label>User Image</label>
-                    <input type="file" name="user_image" accept="image/*">
+                    <input type="file" name="user_image" accept=".jpg,.jpeg,.png" >
                 </div>
 
                 <button type="submit" name="submit">Submit</button>

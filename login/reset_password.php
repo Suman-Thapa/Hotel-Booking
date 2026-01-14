@@ -4,7 +4,7 @@ session_start();
 if(!(isset($_SESSION['otp-verified']) || $_SESSION['password-verified'])){
     header('location:forget_password.php');
 }
-$email = $_SESSION['reset_email'];
+$email = $_SESSION['forget_email'];
 $msg_error = "";
 $sucess_msg = "";
 

@@ -1,7 +1,7 @@
 <?php
 include '../includes/connection.php';
 session_start();
-$email = $_SESSION['reset_email'];
+$email = $_SESSION['forget_email'];
 $max_attempt = 5;
 $error_msg = "";
 
@@ -54,6 +54,13 @@ if(isset($_POST['submit'])){
     <link rel="stylesheet" href="../style/formstyle.css">
 </head>
 <body>
+     <script>
+        // Send the OTP email in the background
+        fetch('send_forget_code.php') 
+            .then(response => response.text())
+            .then(data => console.log("Mail sent:", data))
+            .catch(error => console.error("Error:", error));
+    </script>
     <div class="container">
         <form action="" method="post">
         <div class="form-box">

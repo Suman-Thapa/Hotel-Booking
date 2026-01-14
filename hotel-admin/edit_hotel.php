@@ -96,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <?php else: ?>
                                 <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image">
                             <?php endif; ?>
-                            <input type="file" name="hotel_image" accept="image/*">
+                            <input type="file" name="hotel_image" accept=".jpg,.jpeg,.png">
                         </div>
 
                         <div>

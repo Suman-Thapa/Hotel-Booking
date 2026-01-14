@@ -61,6 +61,8 @@ if (!file_exists($imagePath) || empty($row['room_image'])) {
     $imagePath = "https://via.placeholder.com/450x350?text=No+Image";
 }
 
+
+
 // Payment URLs
 $esewa_url = "../payment/payment_esewa.php";
 $khalti_url = "../payment/payment_khalti.php";
@@ -97,7 +99,7 @@ $khalti_url = "../payment/payment_khalti.php";
             <b>Location:</b> <?= htmlspecialchars($row['location']); ?><br>
             <b>Room No:</b> <?= htmlspecialchars($row['room_number']); ?><br>
             <b>Room Type:</b> <?= htmlspecialchars($row['room_type']); ?><br>
-            <b>Room Info:</b> <?= htmlspecialchars($row['about_rooms']); ?><br>
+            <!-- <b>Room Info:</b> <?= htmlspecialchars($row['about_rooms']); ?><br> -->
             <b>Price per Room:</b> Rs. <?= number_format($row['room_price'], 2); ?>
         </p>
 
@@ -149,3 +151,11 @@ $khalti_url = "../payment/payment_khalti.php";
 <?php include '../includes/footer.php'; ?>
 </body>
 </html>
+
+<script>
+fetch('send_booking_mail.php?booking_id=<?= $booking_id ?>')
+    .then(response => response.text())  
+    .then(data => console.log("Mail sent:", data)) 
+    .catch(error => console.error("Error:", error)); 
+</script>
+
