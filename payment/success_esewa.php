@@ -15,7 +15,10 @@ WHERE booking_id=$booking_id");
 if (!$update) {
     die("Database update failed: " . mysqli_error($con));
 }
-
+$_SESSION['toast'] = [
+    'message' => 'Payment Sucessful,Chek your payment status in invoise',
+    'type' => 'success'
+];
 // Redirect back to invoice
 header("Location: ../user/invoice.php?booking_id=$booking_id");
 exit;

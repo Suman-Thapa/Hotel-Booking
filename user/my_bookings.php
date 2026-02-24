@@ -9,6 +9,28 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+?>
+<div id="tostBox"></div>
+    <link rel="stylesheet" href="../Tost_Message/style.css">
+    <script src="../Tost_Message/script.js"></script>
+
+<?php
+
+        if(!empty($_SESSION['toast'])){
+        $tost = $_SESSION['toast'];
+
+?>
+
+<script>showTost("<?= $tost['message'] ?>","<?= $tost['status'] ?>")</script>
+
+<?php
+unset($_SESSION['toast']);
+
+}
+
+
+
+
 $query = "
     SELECT b.booking_id, b.hotel_id, b.rooms_booked, b.check_in, b.check_out, b.status, h.hotel_name
     FROM bookings b
@@ -28,6 +50,8 @@ if (!$result) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <title>My Bookings</title>
 
         <link rel="stylesheet" href="../style/mybooking.css">
@@ -67,7 +91,10 @@ if (!$result) {
 
                                 <form method="POST" action="cancel_request.php">
                                     <input type="hidden" name="booking_id" value="<?= $row['booking_id']; ?>">
-                                    <button type="submit" class="btn-cancel">Request Cancel</button>
+                                        <button type="submit" class="btn-cancel" 
+                                                onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                            Request Cancel
+                                        </button>
                                 </form>
 
                                 <form method="GET" action="invoice.php">

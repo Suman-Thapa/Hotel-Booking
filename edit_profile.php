@@ -26,11 +26,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['password'])) {
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $update_query = "UPDATE users SET name='$name', email='$email', password='$password' $image_sql WHERE user_id='$user_id'";
+
     } else {
         $update_query = "UPDATE users SET name='$name', email='$email' $image_sql WHERE user_id='$user_id'";
     }
 
-    mysqli_query($con, $update_query);
+    
+    if(mysqli_query($con, $update_query)){
+    $_SESSION['toast'] = [
+        'message' => 'Profile Edited Successfully',
+        'status'  => 'success'
+    ];
+    header('location:view_profile.php');
+    exit();   // ✅ VERY IMPORTANT
+}
+
+
 }
 
 // Fetch current user data

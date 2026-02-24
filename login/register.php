@@ -51,7 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset($_SESSION['number']);
             unset($_SESSION['password']); 
             unset($_SESSION['conform_password']); 
-           header('location:login.php');
+            $_SESSION['register_success'] = [
+            'message' => 'Registration successful!',
+             'type' => 'success'
+            ];
+         header("Location:login.php");
+    exit();
         } else {
             $errorMsg = "Error: " . mysqli_error($con);
         }
@@ -85,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p class="email_error"><?= $email_error ?></p>
                 </div>
                 <div>
-                    <input type="text" name="phone" placeholder="Phone Number" required value="<?= $_SESSION['number'] ?>">
+                    <input type="text" name="phone" id="phone" placeholder="Phone Number" required value="<?= $_SESSION['number'] ?>">
                     <p class="phone_validate_error"><?= $phonenumber_validate_error ?></p>
 
                 </div>
@@ -98,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="password" id="confirm_password" name="conform_password" placeholder="Confirm Password" required class="password_input" value="<?= $_SESSION['conform_password'] ?>">
                         <img src="../uploads/login_icon/hide.png" alt="hide" class="hide_icon">
                     </div>
-                    <p class="password_error"><?= $conform_password_error ?></p>
+                    <p class="password_error" id="confirm_password_error"><?= $conform_password_error ?></p>
                 </div>
                 
                 <button type="submit" name="submit">Register</button>

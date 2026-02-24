@@ -8,8 +8,14 @@ function sanitize($con, $data) {
 function check_login() {
     
     if (!isset($_SESSION['user_id'])) {
-        header("Location: /Hotel-Booking/login/login.php");
+        session_start();
+        $_SESSION['toast'] = [
+            'message' => 'Please login first to book hotel.',
+            'type' => 'error'
+        ];
+        header("Location: ../login/login.php");
         exit();
+
         
     }
 }

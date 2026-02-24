@@ -4,12 +4,48 @@ include '../includes/connection.php';
 include '../includes/functions.php';
 include '../includes/navbar.php';
 
+?>
+    <div id="tostBox"></div>
+    <link rel="stylesheet" href="../Tost_Message/style.css">
+    <script src="../Tost_Message/script.js"></script>
+
+<?php
 // Ensure user is logged in
-check_login();
 
 $user_id = $_SESSION['user_id'] ?? 0;
 if (!$user_id) {
-    die("You must <a href='../login/login.php'>login</a> to view the invoice.");
+    $_SESSION['toast'] = ['message'=>'You Must Login to view Invoice','type'=>'error'];
+    header('location:../login/login.php');
+    exit();
+}
+
+
+
+if(!empty($_SESSION['booking_success'])){
+    $tost = $_SESSION['booking_success'];
+
+    ?>
+    <script>
+        showTost("<?= $tost['message'] ?>","<?= $tost['type']?>");
+    </script>
+
+
+<?php
+unset($_SESSION['booking_success']);
+}
+
+
+if(!empty($_SESSION['toast'])){
+    $tost = $_SESSION['toast'];
+
+    ?>
+    <script>
+        showTost("<?= $tost['message'] ?>","<?= $tost['type']?>");
+    </script>
+
+
+<?php
+unset($_SESSION['toast']);
 }
 
 // Get booking ID from GET
@@ -72,10 +108,12 @@ $khalti_url = "../payment/payment_khalti.php";
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <title>Invoice</title>
 <link rel="stylesheet" href="../style/userinvoice.css">
 </head>
 <body>
+    
 
 <div class="invoice-container">
 

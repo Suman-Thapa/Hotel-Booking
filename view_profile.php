@@ -1,3 +1,5 @@
+
+
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
 include 'includes/connection.php';
@@ -7,6 +9,8 @@ include 'includes/navbar.php';
 if (!isset($_SESSION['user_id'])) {
     die("You must <a href='login.php'>login</a> to view profile.");
 }
+
+
 
 $user_id = $_SESSION['user_id'];
 
@@ -20,9 +24,32 @@ $row = mysqli_fetch_assoc($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style/formstyle.css">
 </head>
 <body>
+    <div id="tostBox"></div>
+    <link rel="stylesheet" href="Tost_Message/style.css">
+    <script src="Tost_Message/script.js"></script>
+
+    <?php
+    if(!empty($_SESSION['toast'])){
+        $tost = $_SESSION['toast'];
+
+?>
+
+<script>showTost("<?= $tost['message'] ?>","<?= $tost['status'] ?>")</script>
+
+<?php
+unset($_SESSION['toast']);
+
+}
+
+
+
+
+
+?>
     
 </body>
 </html>

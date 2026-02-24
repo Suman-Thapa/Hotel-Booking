@@ -26,6 +26,7 @@ include '../includes/connection.php';
                 if ($row['status'] == "booked") {
                     $q2 = "UPDATE bookings SET status='cancel_requested' WHERE booking_id='$booking_id'";
                     if (mysqli_query($con, $q2)) {
+                        $_SESSION['toast'] = ['message'=>'Cancelation Request Sucessfylly Send to the hotel Admin','status'=>'success'];
                         header('location:my_bookings.php');
                     } else {
                         echo "Error: " . mysqli_error($con);

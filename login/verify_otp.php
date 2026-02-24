@@ -67,7 +67,7 @@ if(isset($_POST['submit'])){
             <h2>Verify OTP</h2>
             <div>
                 <label for="otp">Enter Otp:</label>
-                <input type="text" name="otp" id="otp" placeholder="Chek the Otp in your gmail" required>
+                <input type="number" name="otp" id="otp" placeholder="Chek the Otp in your gmail" required>
                 <p class="error"><?= $error_msg ?></p>
             </div>
             <button type="submit" name="submit">Verify Otp</button>

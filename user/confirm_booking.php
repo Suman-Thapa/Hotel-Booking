@@ -2,7 +2,7 @@
 session_start();
 include '../includes/connection.php';
 include '../includes/functions.php';
-require '../Php_Send_Mail/send_mails.php';
+// require '../Php_Send_Mail/send_mails.php';
 check_login();
 
 if(!isset($_SESSION['booking_data'])) die("No booking selected.");
@@ -74,11 +74,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 // ";
 
 
-//     $attachments = [
-//         "../uploads/rooms/".$room['room_image'],
-//         "../uploads/hotels/" . $room['hotel_image']
-//     ];
-//     $result = send_mail($email, $subject, $body, $attachments);
+    // $attachments = [
+    //     "../uploads/rooms/".$room['room_image'],
+    //     "../uploads/hotels/" . $room['hotel_image']
+    // ];
+    // $result = send_mail($email, $subject, $body, $attachments);
 
     $booking_id = mysqli_insert_id($con);
 
@@ -99,6 +99,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     unset($_SESSION['old_room_type']);
     unset($_SESSION['old_min_price']);
     unset($_SESSION['old_max_price']);
+    
+    
+    $_SESSION['booking_success'] = ['message'=>'Booking SucessFul Please Check Your Invoice','type' => 'success'];
     header("Location: invoice.php?booking_id=$booking_id");
     exit;
 }

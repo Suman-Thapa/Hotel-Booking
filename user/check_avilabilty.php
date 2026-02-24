@@ -4,6 +4,8 @@ include '../includes/connection.php';
 include '../includes/functions.php';
 check_login();
 
+
+
 // Get POST data
 $room_id   = (int)$_POST['room_id'] ?? 0;
 $check_in  = $_POST['check_in'] ?? '';
@@ -24,7 +26,7 @@ $roomQuery = mysqli_query($con, "
 ");
 
 if (!$roomQuery || mysqli_num_rows($roomQuery) == 0) {
-    $_SESSION['error'] = "Room not Available for Selected Date ";
+    $_SESSION['tost'] = ['message'=>'Room not Available for Selected Date','type'=>'error'];
     header("Location: ../index.php");
     exit;
 }
@@ -42,9 +44,7 @@ $overlap = mysqli_query($con, "
 ");
 
 if (mysqli_num_rows($overlap) > 0) {
-    $_SESSION['error_msg'] = "<div class='custom-alert'><p>Room is not available for selected date.</p><br><h2> Please choose another Room Category.</h2>'";
-    $_SESSION['date_error_msg'] = "Room is already booked for the selected dates.<b> <h2>Please Select the Room for Another  Date and Try </h2></b>";
-    
+    $_SESSION['tost'] = ['message'=>'Room is already booked for the selected date,Please Select the Room for Another  Date and Try','type'=>'error'];
     header("Location: ../index.php");
     exit;
 }

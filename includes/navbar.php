@@ -29,6 +29,7 @@ if ($user_id) {
             <a href="<?php echo $base_url; ?>hotel-admin/view_hotel.php">Your Hotel</a>
             <a href="<?php echo $base_url; ?>hotel-admin/admin_invoices.php">Invoices</a>
             <a href="<?php echo $base_url; ?>hotel-admin/admin_pending_cancellations.php">Cancellations</a>
+                    <a href="<?php echo $base_url; ?>hotel-admin/admin_enquiry_list.php">Inquiry/Messages</a>
         <?php endif; ?>
     </div>
 

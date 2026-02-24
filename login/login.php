@@ -2,11 +2,36 @@
 session_start();
 include '../includes/functions.php';
 include '../includes/connection.php';
+?>
 
-$msg = "";
-$email_value = ""; // To preserve email input on error
-$email_error = "";
-$password_error = "";
+<!-- Toast container -->
+<div id="tostBox"></div>
+<link rel="stylesheet" href="../Tost_Message/style.css">
+<script src="../Tost_Message/script.js"></script>
+
+<?php
+// Show any toast message
+if (isset($_SESSION['toast'])): 
+    $toast = $_SESSION['toast']; 
+?>
+<script>
+    showTost("<?= $toast['message']; ?>", "<?= $toast['type']; ?>");
+</script>
+<?php 
+unset($_SESSION['toast']); 
+endif;
+
+// Show registration success
+if (!empty($_SESSION['register_success'])): ?>
+<script>
+    showTost("<?= $_SESSION['register_success']['message']; ?>", "<?= $_SESSION['register_success']['type']; ?>");
+</script>
+<?php
+unset($_SESSION['register_success']);
+endif;
+
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email    = sanitize($con, $_POST['email']);
@@ -34,6 +59,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: ../admin/index.php");
             }
             else {
+                $_SESSION['tost'] = [
+                'message' => 'Login Sucessfull,Welcome to Hotel Booking System',
+                'type' => 'success'
+        ];
                 header("Location: ../index.php");
             }
             exit();
@@ -49,6 +78,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="../Tost_Message/style.css">
+<script src="https://kit.fontawesome.com/cbf281c702.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="../style/formstyle.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,6 +118,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 </div>
+<script src="../Tost_Message/script.js"></script>
+
 
 </body>
 </html>

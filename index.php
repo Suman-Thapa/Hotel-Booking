@@ -16,20 +16,33 @@ if ($check_out <= $check_in) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <title>Hotel Booking System</title>
 <link rel="stylesheet" href="style/userindexstyle.css">
 </head>
 <body>
+    <div id="tostBox"></div>
+    <link rel="stylesheet" href="Tost_Message/style.css">
+    <script src="Tost_Message/script.js"></script>
+
+   
 
 <?php
-if (!empty($_SESSION['error'])) {
-    echo "<div class='custom-alert'>".$_SESSION['error_msg']."</div>";
-    unset($_SESSION['error']);
+
+
+
+if(!empty($_SESSION['tost'])){
+    $toast = $_SESSION['tost']; ?>
+
+<script>
+        showTost("<?= $toast['message'] ?>","<?= $toast['type'] ?>");
+    </script>
+<?php
+unset($_SESSION['tost']);
+
 }
-if (!empty($_SESSION['date_error_msg'])) {
-    echo "<div class='custom-alert'>".$_SESSION['date_error_msg']."</div>";
-    unset($_SESSION['date_error_msg']);
-}
+
+
 ?>
 
 <div class="hero-section" id="filter">

@@ -5,97 +5,141 @@ USE HotelBooking;
 -- --------------------------------------------------------
 -- USERS TABLE
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users (
-    user_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) DEFAULT NULL,
-    email VARCHAR(100) DEFAULT NULL,
-    password VARCHAR(255) DEFAULT NULL,
+CREATE TABLE users (
+    user_id INT(11) NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(45),
+    password VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    user_image VARCHAR(255) DEFAULT NULL,
-    level ENUM('user','admin','hoteladmin') DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    user_image VARCHAR(255),
+    level ENUM('user','admin','hoteladmin'),
+    PRIMARY KEY (user_id)
+);
+
 
 -- --------------------------------------------------------
 -- HOTELS TABLE
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS hotels (
-    hotel_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    hotel_name VARCHAR(150) DEFAULT NULL,
-    location VARCHAR(150) DEFAULT NULL,
-    created_by VARCHAR(50) DEFAULT NULL,
-    hotel_image VARCHAR(255) DEFAULT NULL,
-    about TEXT DEFAULT NULL,
-    hotel_admin_id INT(11) DEFAULT NULL,
-    FOREIGN KEY (hotel_admin_id) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE hotels (
+    hotel_id INT(11) NOT NULL AUTO_INCREMENT,
+    hotel_name VARCHAR(150),
+    location VARCHAR(150),
+    created_by VARCHAR(50),
+    hotel_image VARCHAR(255),
+    about TEXT,
+    hotel_admin_id INT(11),
+    hotel_address_link VARCHAR(250),
+    PRIMARY KEY (hotel_id),
+    KEY hotel_admin_id (hotel_admin_id),
+    FOREIGN KEY (hotel_admin_id) REFERENCES users(user_id)
+);
+
 
 -- --------------------------------------------------------
 -- HOTEL ROOM TABLE
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS hotel_room (
-    room_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE hotel_rooms (
+    room_id INT(11) NOT NULL AUTO_INCREMENT,
     hotel_id INT(11) NOT NULL,
     room_number VARCHAR(50) NOT NULL,
-    room_type ENUM('Single','Double','Suite') DEFAULT 'Single',
-    price_per_room DECIMAL(10,2) NOT NULL,
+    room_type VARCHAR(50) DEFAULT 'Single',
+    room_price DECIMAL(10,2) NOT NULL,
     status ENUM('Available','Booked') DEFAULT 'Available',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    room_image VARCHAR(250) DEFAULT NULL,
-    total_rooms INT(11) DEFAULT NULL,
-    available_rooms INT(11) DEFAULT NULL,
-    about_rooms TEXT DEFAULT NULL,
-    FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    room_image VARCHAR(250),
+    about_rooms TEXT,
+    PRIMARY KEY (room_id),
+    KEY hotel_id (hotel_id),
+    FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id)
+);
+
 
 -- --------------------------------------------------------
 -- BOOKINGS TABLE
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS bookings (
-    booking_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE bookings (
+    booking_id INT(11) NOT NULL AUTO_INCREMENT,
     user_id INT(11) NOT NULL,
     hotel_id INT(11) NOT NULL,
     room_id INT(11) NOT NULL,
     rooms_booked INT(11) NOT NULL,
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
-    status ENUM('booked','cancel_requested','canceled') DEFAULT 'booked',
+    nights INT(11) NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
     booked_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES hotel_room(room_id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    status ENUM('booked','cancelled','completed','cancel_requested') NOT NULL DEFAULT 'booked',
+    email_send VARCHAR(45) DEFAULT '0',
+    PRIMARY KEY (booking_id),
+    KEY user_id (user_id),
+    KEY hotel_id (hotel_id),
+    KEY room_id (room_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id),
+    FOREIGN KEY (room_id) REFERENCES hotel_rooms(room_id)
+);
+
 
 -- --------------------------------------------------------
 -- PAYMENTS TABLE
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS payments (
-    payment_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT(11) DEFAULT NULL,
-    user_id INT(11) DEFAULT NULL,
-    amount DECIMAL(10,2) DEFAULT NULL,
-    payment_method VARCHAR(50) DEFAULT NULL,
-    transaction_id VARCHAR(100) DEFAULT NULL,
+CREATE TABLE payments (
+    payment_id INT(11) NOT NULL AUTO_INCREMENT,
+    booking_id INT(11),
+    user_id INT(11),
+    amount DECIMAL(10,2),
+    payment_method VARCHAR(50),
+    transaction_id VARCHAR(100),
     payment_status ENUM('pending','completed','failed','paid') DEFAULT 'pending',
     payment_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    PRIMARY KEY (payment_id),
+    KEY booking_id (booking_id),
+    KEY user_id (user_id),
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 
 
 
-CREATE TABLE room_calendar (
-    calendar_id INT AUTO_INCREMENT PRIMARY KEY,
-    room_id INT NOT NULL,
-    date DATE NOT NULL,
-    status ENUM('available','booked','maintenance') DEFAULT 'available',
-    booking_id INT DEFAULT NULL,
+CREATE TABLE otp (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    otp VARCHAR(45),
+    email VARCHAR(200),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    attempt INT(11) DEFAULT 0,
+    email_sent VARCHAR(45) DEFAULT '0',
+    PRIMARY KEY (id)
+);
 
-    UNIQUE (room_id, date),  -- ⬅ Prevents double-booking on same day
 
+CREATE TABLE messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,      -- user_id (client or admin)
+    receiver_id INT NOT NULL,    -- user_id
+    hotel_id INT NULL,           -- which hotel (optional but useful)
+    room_id INT NULL,            -- which room (optional)
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_read TINYINT DEFAULT 0,
+
+    FOREIGN KEY (sender_id) REFERENCES users(user_id),
+    FOREIGN KEY (receiver_id) REFERENCES users(user_id),
+    FOREIGN KEY (hotel_id) REFERENCES hotels(hotel_id),
     FOREIGN KEY (room_id) REFERENCES hotel_rooms(room_id)
-        ON DELETE CASCADE,
+);
 
-    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
-        ON DELETE SET NULL
+ALTER TABLE messages ADD auto_sent TINYINT DEFAULT 0;
+
+
+
+CREATE TABLE otp (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    otp VARCHAR(45),
+    email VARCHAR(200),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    attempt INT(11) DEFAULT 0,
+    email_sent VARCHAR(45) DEFAULT '0',
+    PRIMARY KEY (id)
 );
